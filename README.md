@@ -20,8 +20,7 @@ Presente! risolve le inefficienze legate al monitoraggio delle presenze attraver
 
 ### 🌟 Key Features:
 * **Hybrid Check-in Support**: 
-  * Sistema di check-in in presenza tramite **Dynamic QR Code** crittografato (anti-tampering).
-  * Parser avanzato per importare automaticamente il registro presenze di **Microsoft Teams** per chi partecipa online.
+  * Sistema di check-in in presenza tramite **Dynamic QR Code** crittografato (anti-tampering) che via il dashboard.
 * **Pre-Assembly Form Import**: Importazione massiva dei dati provenienti dai moduli Forms pre-assemblea. Il sistema riconosce e traccia automaticamente le **Deleghe** e le **Assenze Giustificate** preventivamente, aggiornando lo stato dei soci senza intervento manuale.
 * **Global Absence Streak & Alert Engine**: Motore analitico che calcola in tempo reale il rischio di decadimento in conformità allo statuto.
   * **🔴 Critica (Red Alert)**: $\ge 2$ assenze *consecutive* in Assemblea.
@@ -151,7 +150,7 @@ Segui questi passaggi per lanciare l'ambiente di sviluppo in locale senza l'util
 Apri un terminale e naviga nella cartella `backend/`:
 ```bash
 cd backend
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate  # Su Windows: venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn main:app --reload

@@ -338,15 +338,7 @@ export default function MemberAnalyticsPage() {
                     <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
                       Ruolo / Area
                     </th>
-                    <th
-                      scope="col"
-                      onClick={() => handleSort("global_attendance_pct")}
-                      className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-800"
-                    >
-                      <div className="flex items-center gap-1">
-                        Tasso Presenza <ArrowUpDown className="h-3 w-3" />
-                      </div>
-                    </th>
+
                     <th
                       scope="col"
                       onClick={() => handleSort("assembly_absences")}
@@ -387,16 +379,7 @@ export default function MemberAnalyticsPage() {
                           <span className="text-xs text-gray-400">{member.area_lavoro || "-"}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-gray-900 dark:text-white">
-                            {member.global_attendance_pct}%
-                          </span>
-                          <span className="text-xs text-gray-500 dark:text-zinc-400 font-mono">
-                            ({member.total_attendances}/{member.total_events_held})
-                          </span>
-                        </div>
-                      </td>
+
                       <td className="px-6 py-4 whitespace-nowrap text-center sm:text-left">
                         <div className="flex flex-col items-center sm:items-start gap-1">
                           <div>

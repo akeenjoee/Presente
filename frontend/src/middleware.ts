@@ -7,7 +7,7 @@ export default withAuth(
     const user = req.nextauth.token;
 
     // Le rotte pubbliche o aperte a tutti i membri @jemore.it
-    if (pathname.startsWith("/checkin") || pathname.startsWith("/api/auth")) {
+    if (pathname.startsWith("/checkin") || pathname.startsWith("/login") || pathname.startsWith("/api/auth")) {
       return NextResponse.next();
     }
 
@@ -39,8 +39,8 @@ export default withAuth(
   {
     callbacks: {
       authorized: ({ req, token }) => {
-        // Allow unauthenticated users to access /checkin so they can see the custom login screen
-        if (req.nextUrl.pathname.startsWith("/checkin")) {
+        // Allow unauthenticated users to access /checkin and /login so they can see the custom login screen
+        if (req.nextUrl.pathname.startsWith("/checkin") || req.nextUrl.pathname.startsWith("/login")) {
           return true;
         }
         return !!token; // Assicura che l'utente sia loggato per le altre rotte

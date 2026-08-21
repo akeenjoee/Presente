@@ -134,9 +134,7 @@ export const LiveRosterTable: React.FC<LiveRosterTableProps> = ({
                   <tr
                     key={member.socio_id}
                     className={`transition-colors ${
-                      isCritical
-                        ? "bg-red-50/70 dark:bg-red-950/20"
-                        : isPresent
+                      isPresent
                         ? "bg-green-50/40 dark:bg-green-950/10"
                         : isExcused
                         ? "bg-yellow-50/40 dark:bg-yellow-950/10"
@@ -163,11 +161,6 @@ export const LiveRosterTable: React.FC<LiveRosterTableProps> = ({
                         {member.delega_a && (
                           <span className="text-[10px] text-gray-500 font-medium">
                             Delega a: <span className="text-gray-700 dark:text-gray-300">{member.delega_a}</span>
-                          </span>
-                        )}
-                        {isCritical && (
-                          <span className="flex items-center text-red-600 dark:text-red-400 text-xs font-bold gap-0.5 bg-red-100 dark:bg-red-900/50 px-1.5 py-0.5 rounded border border-red-200 dark:border-red-800">
-                            <AlertTriangle className="h-3 w-3" /> CRITICO
                           </span>
                         )}
                       </div>
@@ -232,10 +225,6 @@ export const LiveRosterTable: React.FC<LiveRosterTableProps> = ({
       <div className="p-3 bg-gray-50 dark:bg-zinc-950 border-t border-gray-200 dark:border-zinc-800 text-xs text-gray-400 flex items-center justify-between">
         <span>Mostrati {filteredMembers.length} di {members.length} soci.</span>
         <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 bg-red-100 dark:bg-red-950 border border-red-300 dark:border-red-900 rounded"></span>
-            Assenza Critica
-          </span>
           <span className="flex items-center gap-1">
             <span className="w-2.5 h-2.5 bg-green-100 dark:bg-green-950 border border-green-300 dark:border-green-900 rounded"></span>
             Presente
