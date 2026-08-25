@@ -43,16 +43,16 @@ export const Navbar: React.FC<NavbarProps> = ({ className = "" }) => {
   };
 
   return (
-    <nav className={`bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800 sticky top-0 z-50 ${className}`}>
+    <nav className={`bg-white dark:bg-zinc-950 border-b border-gray-200 dark:border-zinc-800 sticky top-0 z-50 ${className}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left section: Logo + Separator + Nav Links */}
           <div className="flex items-center gap-4">
             {/* Logo Section */}
             <div className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-blue-500" />
-              <span className="text-lg font-bold tracking-tight text-gray-900 dark:text-white flex items-center gap-1.5 whitespace-nowrap">
-                Presente! <span className="text-[10px] bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 font-bold px-1.5 py-0.5 rounded border border-gray-200 dark:border-zinc-700">v1.0</span>
+              <Calendar className="h-5 w-5 text-[#2b397c] dark:text-blue-400" />
+              <span className="text-lg font-bold tracking-tight text-[#1f295c] dark:text-white flex items-center gap-1.5 whitespace-nowrap">
+                Presente! <span className="text-[10px] bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400 font-bold px-1.5 py-0.5 rounded border border-gray-200 dark:border-zinc-700">v1.0</span>
               </span>
             </div>
 
@@ -69,8 +69,8 @@ export const Navbar: React.FC<NavbarProps> = ({ className = "" }) => {
                     href={item.href}
                     className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-semibold transition-colors ${
                       isActive
-                        ? "bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400"
-                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-white"
+                        ? "bg-[#2b397c] dark:bg-blue-600/20 text-white dark:text-blue-400"
+                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-zinc-900 hover:text-gray-900 dark:hover:text-white"
                     }`}
                   >
                     {item.icon}
@@ -87,37 +87,43 @@ export const Navbar: React.FC<NavbarProps> = ({ className = "" }) => {
               <div className="flex items-center gap-4">
                 <button
                   onClick={handleNuovoEvento}
-                  className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 bg-zinc-150 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 text-zinc-750 dark:text-zinc-200 rounded text-sm font-semibold transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
+                  className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 bg-gray-50 dark:bg-zinc-900 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 rounded text-sm font-semibold transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-zinc-600"
                 >
                   <PlusCircle className="h-4 w-4" /> Nuovo Evento
                 </button>
                 <div className="h-6 border-l border-gray-200 dark:border-zinc-800 hidden sm:block" />
                 <div className="flex items-center gap-3">
                   <div className="hidden md:flex flex-col items-end">
-                    <span className="text-sm font-bold text-gray-900 dark:text-white leading-tight">{session.user?.name}</span>
-                    <span className="text-xs text-gray-500 dark:text-zinc-400 leading-tight">{(session.user as any)?.ruolo || 'Membro JEMORE'}</span>
+                    <span className="text-sm font-bold text-[#1f295c] dark:text-white leading-tight">{session.user?.name}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 leading-tight">{(session.user as any)?.ruolo || 'Membro JEMORE'}</span>
                   </div>
-                  <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-700 dark:text-blue-300">
-                    <User className="h-4 w-4" />
-                  </div>
+                  
+                  {/* Dark Pill for Logout matching Formazing */}
                   <button
                     onClick={() => signOut()}
-                    className="p-1.5 text-gray-500 hover:text-red-600 dark:text-zinc-400 dark:hover:text-red-400 transition-colors rounded-md hover:bg-red-50 dark:hover:bg-red-950/30"
+                    className="flex items-center gap-2 pl-2 pr-3 py-1 bg-[#1f295c] hover:bg-[#2b397c] text-white transition-colors rounded-full text-xs font-semibold"
                     title="Esci"
                   >
-                    <LogOut className="h-4 w-4" />
+                    <div className="h-6 w-6 rounded-full bg-white/20 flex items-center justify-center text-white">
+                      <LogOut className="h-3 w-3" />
+                    </div>
+                    Logout
                   </button>
                 </div>
               </div>
             ) : status === "loading" ? (
-              <div className="h-8 w-24 bg-gray-200 dark:bg-zinc-800 animate-pulse rounded"></div>
+              <div className="flex items-center gap-4">
+                <div className="h-8 w-24 bg-gray-200 dark:bg-zinc-800 animate-pulse rounded"></div>
+              </div>
             ) : (
-              <button
+              <div className="flex items-center gap-4">
+                <button
                 onClick={() => signIn("azure-ad")}
-                className="flex items-center gap-2 px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-semibold transition-colors shadow-sm"
+                className="flex items-center gap-2 px-3.5 py-1.5 bg-[#2b397c] hover:bg-[#1f295c] text-white rounded text-sm font-semibold transition-colors shadow-sm"
               >
                 <LogIn className="h-4 w-4" /> Accedi con Microsoft
-              </button>
+                </button>
+              </div>
             )}
           </div>
         </div>

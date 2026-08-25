@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="it" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-gray-50 text-gray-900 dark:bg-zinc-950 dark:text-zinc-100 min-h-screen font-sans`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-[#253264] dark:bg-zinc-950 text-white min-h-screen font-sans transition-colors duration-200`}
       >
         <AuthProvider>
           <Navbar />
