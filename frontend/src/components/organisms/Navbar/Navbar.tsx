@@ -87,7 +87,7 @@ export const Navbar: React.FC<NavbarProps> = ({ className = "" }) => {
               <div className="flex items-center gap-4">
                 <button
                   onClick={handleNuovoEvento}
-                  className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 bg-gray-50 dark:bg-zinc-900 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 rounded text-sm font-semibold transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-zinc-600"
+                  className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 bg-[#2b397c] hover:bg-[#1f295c] dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded text-sm font-semibold transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <PlusCircle className="h-4 w-4" /> Nuovo Evento
                 </button>
