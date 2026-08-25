@@ -142,12 +142,12 @@ function CheckInContent() {
   // ── 1. No event_id in URL ─────────────────────────────────────────
   if (!eventIdParam) {
     return (
-      <div className="max-w-md w-full mx-auto my-12 p-6 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-lg shadow-sm text-center">
+      <div className="max-w-md w-full mx-auto my-12 p-10 bg-white dark:bg-zinc-900 rounded-xl shadow-2xl text-center">
         <ShieldAlert className="h-12 w-12 text-red-500 mx-auto" />
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mt-4">
+        <h2 className="text-xl font-bold text-[#1f295c] dark:text-white mt-4">
           Link QR Non Valido
         </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+        <p className="text-sm text-gray-500 mt-2">
           Questo link non contiene le informazioni sull&apos;evento. Inquadra il
           codice QR proiettato dall&apos;amministratore.
         </p>
@@ -158,20 +158,20 @@ function CheckInContent() {
   // ── 2. Not logged in — SSO ───────────────────────────────────
   if (!session) {
     return (
-      <div className="max-w-md w-full mx-auto my-12 p-10 bg-white rounded-xl shadow-2xl text-center">
+      <div className="max-w-md w-full mx-auto my-12 p-10 bg-white dark:bg-zinc-900 rounded-xl shadow-2xl text-center">
         <div className="flex justify-center mb-5">
            {/* Placeholder for Logo, using Lucide for now */}
-           <div className="p-3 border border-[#2b397c] rounded-full">
-             <QrCode className="h-8 w-8 text-[#2b397c]" />
+           <div className="p-3 border border-[#2b397c] dark:border-blue-400 rounded-full">
+             <QrCode className="h-8 w-8 text-[#2b397c] dark:text-blue-400" />
            </div>
         </div>
         
-        <h2 className="text-2xl font-bold text-[#1f295c] mb-1 tracking-tight">
+        <h2 className="text-2xl font-bold text-[#1f295c] dark:text-white mb-1 tracking-tight">
           Presente!
         </h2>
         
         {!eventLoading && eventInfo ? (
-          <p className="text-sm font-medium text-gray-500 mb-8">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-8">
             {eventInfo.titolo}
           </p>
         ) : (
@@ -180,8 +180,8 @@ function CheckInContent() {
           </p>
         )}
 
-        <div className="bg-gray-50 text-gray-700 text-[13px] font-medium py-3 px-4 rounded-lg mb-8 flex items-center justify-center gap-2 border border-gray-100 shadow-sm">
-           <ShieldAlert className="h-4 w-4 text-[#1f295c]" />
+        <div className="bg-gray-50 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 text-[13px] font-medium py-3 px-4 rounded-lg mb-8 flex items-center justify-center gap-2 border border-gray-100 dark:border-zinc-700 shadow-sm">
+           <ShieldAlert className="h-4 w-4 text-[#1f295c] dark:text-blue-400" />
            Utilizza il tuo account <strong>JEMORE</strong> per confermare la presenza.
         </div>
 
@@ -205,31 +205,31 @@ function CheckInContent() {
   // ── 3. Success ────────────────────────────────────────────────────
   if (success) {
     return (
-      <div className="max-w-md w-full mx-auto my-12 p-6 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-lg shadow-sm text-center">
+      <div className="max-w-md w-full mx-auto my-12 p-10 bg-white dark:bg-zinc-900 rounded-xl shadow-2xl text-center">
         <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto animate-bounce" />
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mt-4">
+        <h2 className="text-xl font-bold text-[#1f295c] dark:text-white mt-4">
           Presenza Registrata!
         </h2>
-        <p className="text-sm text-green-600 dark:text-green-400 mt-1 font-medium">
+        <p className="text-sm text-green-600 dark:text-green-500 mt-1 font-medium">
           {successMsg}
         </p>
 
-        <div className="mt-6 border border-gray-100 dark:border-zinc-800 rounded-lg bg-gray-50 dark:bg-zinc-950 p-4 text-left text-sm space-y-2">
+        <div className="mt-6 border border-gray-100 dark:border-zinc-800 rounded-lg bg-gray-50 dark:bg-zinc-800/50 p-4 text-left text-sm space-y-2">
           <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
             Riepilogo
           </p>
           <p>
-            <span className="text-xs text-gray-500 font-semibold">Socio: </span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Socio: </span>
             <span className="font-bold text-gray-900 dark:text-white">{session.user?.name}</span>
           </p>
           {eventInfo && (
             <p>
-              <span className="text-xs text-gray-500 font-semibold">Evento: </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Evento: </span>
               <span className="font-bold text-gray-900 dark:text-white">{eventInfo.titolo}</span>
             </p>
           )}
           <p>
-            <span className="text-xs text-gray-500 font-semibold">Modalità: </span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Modalità: </span>
             <span
               className={`inline-flex items-center gap-1 font-semibold ${
                 modality === "IN_PRESENZA"
@@ -261,13 +261,13 @@ function CheckInContent() {
   const isInPersonOnly = eventInfo?.modalita === "IN_PERSON_ONLY";
 
   return (
-    <div className="max-w-md w-full mx-auto my-12 p-6 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-lg shadow-sm">
+    <div className="max-w-md w-full mx-auto my-12 p-8 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl shadow-xl">
       {/* User bar */}
       <div className="flex items-center justify-between border-b border-gray-200 dark:border-zinc-800 pb-4 mb-5">
         <div className="flex items-center gap-2 text-sm">
           <UserCircle className="h-5 w-5 text-gray-400" />
           <div>
-            <p className="font-semibold text-gray-900 dark:text-white">{session.user?.name}</p>
+            <p className="font-semibold text-[#1f295c] dark:text-white">{session.user?.name}</p>
             <p className="text-xs text-gray-500 dark:text-gray-400">{session.user?.email}</p>
           </div>
         </div>
@@ -278,7 +278,7 @@ function CheckInContent() {
 
       {/* Error */}
       {error && (
-        <div className="p-3 mb-4 bg-red-100 border border-red-200 dark:bg-red-950/20 dark:border-red-900 text-red-700 dark:text-red-300 rounded text-xs font-semibold flex items-start gap-2">
+        <div className="p-3 mb-4 bg-red-100 border border-red-200 text-red-700 rounded-lg text-xs font-semibold flex items-start gap-2">
           <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
@@ -286,7 +286,7 @@ function CheckInContent() {
 
       <div className="space-y-5">
         {/* Event card */}
-        <div className="bg-gray-50 dark:bg-zinc-950 p-4 border border-gray-200 dark:border-zinc-800 rounded">
+        <div className="bg-gray-50 dark:bg-zinc-800/50 p-4 border border-gray-200 dark:border-zinc-800 rounded-lg">
           <span className="text-xs text-gray-400 uppercase tracking-widest font-bold">
             Evento
           </span>
@@ -296,14 +296,14 @@ function CheckInContent() {
             </div>
           ) : eventInfo ? (
             <>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mt-1">
+              <h2 className="text-xl font-bold text-[#1f295c] dark:text-white mt-1">
                 {eventInfo.titolo}
               </h2>
               <div className="flex items-center gap-2 mt-1.5">
-                <span className="text-xs px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-semibold">
+                <span className="text-xs px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold">
                   {eventInfo.tipo}
                 </span>
-                <span className="text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400 font-semibold">
+                <span className="text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-300 font-semibold">
                   {eventInfo.modalita === "HYBRID"
                     ? "Ibrida"
                     : eventInfo.modalita === "IN_PERSON_ONLY"
@@ -322,7 +322,7 @@ function CheckInContent() {
         {/* Modality selector — only for hybrid events */}
         {!isOnlineOnly && !isInPersonOnly && (
           <div className="space-y-2">
-            <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">
+            <label className="text-xs font-bold text-gray-500 uppercase">
               Come partecipi?
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -330,7 +330,7 @@ function CheckInContent() {
                 onClick={() => setModality("IN_PRESENZA")}
                 className={`py-3 px-4 border rounded font-semibold text-sm transition-colors flex items-center justify-center gap-2 ${
                   modality === "IN_PRESENZA"
-                    ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400"
+                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
                     : "border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800 text-gray-700 dark:text-gray-300"
                 }`}
               >
@@ -340,7 +340,7 @@ function CheckInContent() {
                 onClick={() => setModality("ONLINE")}
                 className={`py-3 px-4 border rounded font-semibold text-sm transition-colors flex items-center justify-center gap-2 ${
                   modality === "ONLINE"
-                    ? "border-purple-500 bg-purple-50 dark:bg-purple-950/20 text-purple-600 dark:text-purple-400"
+                    ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400"
                     : "border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800 text-gray-700 dark:text-gray-300"
                 }`}
               >
@@ -352,7 +352,7 @@ function CheckInContent() {
 
         {/* Auto-mode badge */}
         {(isOnlineOnly || isInPersonOnly) && (
-          <div className="p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900 rounded text-xs font-semibold text-blue-700 dark:text-blue-300 flex items-center gap-2">
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs font-semibold text-blue-700 flex items-center gap-2">
             {isOnlineOnly ? <Wifi className="h-4 w-4" /> : <MapPin className="h-4 w-4" />}
             Evento {isOnlineOnly ? "Online" : "In Presenza"} — modalità impostata automaticamente.
           </div>
@@ -374,7 +374,7 @@ function CheckInContent() {
 
 export default function CheckInPage() {
   return (
-    <main className="flex-1 flex flex-col items-center justify-center min-h-screen p-6 bg-[#253264]">
+    <main className="flex-1 flex flex-col items-center justify-center min-h-screen p-6 bg-[#253264] dark:bg-zinc-950">
       <Suspense
         fallback={
           <div className="flex items-center gap-2 text-white text-sm">
