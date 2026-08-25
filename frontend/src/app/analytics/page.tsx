@@ -70,7 +70,7 @@ export default function MemberAnalyticsPage() {
       setImportResult(data.summary);
       // Refresh the analytics table
       fetchAnalytics();
-      
+
       // Auto clear result banner after 12 seconds
       setTimeout(() => {
         setImportResult(null);
@@ -162,7 +162,7 @@ export default function MemberAnalyticsPage() {
               Monitora il tasso di partecipazione dei soci, le assenze consecutive e le soglie di alert statutarie
             </p>
           </div>
-          
+
           <div className="flex items-center gap-3">
             <input
               type="file"
@@ -174,9 +174,8 @@ export default function MemberAnalyticsPage() {
             />
             <label
               htmlFor="csv-upload-input"
-              className={`cursor-pointer inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-zinc-805 rounded text-sm font-semibold shadow-xs transition-colors ${
-                importing ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+              className={`cursor-pointer inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-zinc-805 rounded text-sm font-semibold shadow-xs transition-colors ${importing ? "opacity-50 cursor-not-allowed" : ""
+                }`}
             >
               {importing ? (
                 <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
@@ -274,7 +273,7 @@ export default function MemberAnalyticsPage() {
 
           <div className="flex flex-wrap gap-3 w-full md:w-auto">
             <div className="flex items-center gap-1.5">
-              <span className="text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">Warning:</span>
+              <span className="text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">Stato:</span>
               <select
                 value={selectedWarningLevel}
                 onChange={(e) => setSelectedWarningLevel(e.target.value)}
@@ -349,7 +348,7 @@ export default function MemberAnalyticsPage() {
                       </div>
                     </th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
-                      Stato di Alert
+                      Stato
                     </th>
                   </tr>
                 </thead>
@@ -357,13 +356,12 @@ export default function MemberAnalyticsPage() {
                   {processedAnalytics.map((member) => (
                     <tr
                       key={member.socio_id}
-                      className={`hover:bg-gray-50 dark:hover:bg-zinc-800/20 ${
-                        member.warning_level === "CRITICAL"
+                      className={`hover:bg-gray-50 dark:hover:bg-zinc-800/20 ${member.warning_level === "CRITICAL"
                           ? "bg-red-500/5 hover:bg-red-500/10"
                           : member.warning_level === "PRE_ALERT"
-                          ? "bg-yellow-500/5 hover:bg-yellow-500/10"
-                          : ""
-                      }`}
+                            ? "bg-yellow-500/5 hover:bg-yellow-500/10"
+                            : ""
+                        }`}
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex flex-col">
@@ -383,13 +381,12 @@ export default function MemberAnalyticsPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-center sm:text-left">
                         <div className="flex flex-col items-center sm:items-start gap-1">
                           <div>
-                            <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
-                              member.assembly_absences >= 2
+                            <span className={`px-2 py-0.5 rounded text-xs font-semibold ${member.assembly_absences >= 2
                                 ? "bg-red-100 text-red-800 dark:bg-red-950/30 dark:text-red-300"
                                 : member.assembly_absences === 1
-                                ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-950/30 dark:text-yellow-300"
-                                : "bg-green-100 text-green-800 dark:bg-green-950/30 dark:text-green-300"
-                            }`}>
+                                  ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-950/30 dark:text-yellow-300"
+                                  : "bg-green-100 text-green-800 dark:bg-green-950/30 dark:text-green-300"
+                              }`}>
                               {member.assembly_absences} assenze
                             </span>
                             <span className="text-xs text-gray-400 ml-1.5 font-mono">

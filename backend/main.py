@@ -349,6 +349,28 @@ async def import_pre_assembly(event_id: int, file: UploadFile = File(...), db: S
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Errore durante l'importazione del file CSV: {str(e)}")
 
+@app.post("/api/events/{event_id}/import-teams")
+async def import_teams(event_id: int, threshold_minutes: int = Query(15, description="Minuti minimi per essere considerati presenti"), file: UploadFile = File(...), db: Session = Depends(get_db)):
+    """
+    Imports a Microsoft Teams attendance report CSV for online attendees.
+    """
+    event = db.query(models.Evento).filter(models.Evento.id == event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+        
+    try:
+        contents = await file.read()
+        
+        from teams_parser import parse_teams_csv
+        result = parse_teams_csv(db, event_id, contents, threshold_minutes)
+        
+        # Broadcast SSE event to update all dashboards dynamically
+        await broadcast_to_sse("ROSTER_UPDATED", {"event_id": event_id, "summary": result})
+        
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Errore durante l'importazione del file Teams: {str(e)}")
+
 
 # --- SSE Stream Endpoint ---
 

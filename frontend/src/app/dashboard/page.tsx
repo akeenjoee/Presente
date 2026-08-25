@@ -314,6 +314,36 @@ export default function Dashboard() {
     }
   };
 
+  // Handle Teams CSV Import
+  const handleTeamsUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedEventId) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      setError("");
+      const res = await fetch(`http://localhost:8000/api/events/${selectedEventId}/import-teams`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.detail || "Errore durante l'importazione Teams");
+      }
+
+      alert("Importazione Teams completata con successo!");
+      await fetchEventRoster(selectedEventId);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Errore durante l'importazione Teams");
+    } finally {
+      e.target.value = "";
+    }
+  };
+
   // Calculate KPIs dynamically
   const activeMembers = members.filter((m) => m.stato === "ATTIVO");
   
@@ -378,16 +408,29 @@ export default function Dashboard() {
           {selectedEvent && (
             <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-gray-500 dark:text-gray-400">
 
-              <label className="flex items-center gap-1 px-2 py-1 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-300 rounded border border-gray-300 dark:border-zinc-700 cursor-pointer font-sans text-[11px] font-medium transition-colors">
-                <Upload className="h-3 w-3" />
-                Importa deleghe (CSV)
-                <input
-                  type="file"
-                  accept=".csv"
-                  className="hidden"
-                  onChange={handleCsvUpload}
-                />
-              </label>
+              {selectedEvent.modalita === "ONLINE" || selectedEvent.modalita === "ONLINE_ONLY" ? (
+                <label className="flex items-center gap-1 px-2 py-1 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-300 rounded border border-gray-300 dark:border-zinc-700 cursor-pointer font-sans text-[11px] font-medium transition-colors">
+                  <Upload className="h-3 w-3" />
+                  Importa Teams (CSV)
+                  <input
+                    type="file"
+                    accept=".csv"
+                    className="hidden"
+                    onChange={handleTeamsUpload}
+                  />
+                </label>
+              ) : (
+                <label className="flex items-center gap-1 px-2 py-1 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-300 rounded border border-gray-300 dark:border-zinc-700 cursor-pointer font-sans text-[11px] font-medium transition-colors">
+                  <Upload className="h-3 w-3" />
+                  Importa deleghe (CSV)
+                  <input
+                    type="file"
+                    accept=".csv"
+                    className="hidden"
+                    onChange={handleCsvUpload}
+                  />
+                </label>
+              )}
 
               {/* Proietta QR — visible here, relative to the selected event */}
               <button
@@ -523,6 +566,7 @@ export default function Dashboard() {
             members={members}
             onManualCheckin={handleManualCheckin}
             isLoading={loading}
+            isOnlineEvent={selectedEvent?.modalita === "ONLINE" || selectedEvent?.modalita === "ONLINE_ONLY"}
           />
         </section>
       </main>

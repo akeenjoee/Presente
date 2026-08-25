@@ -7,6 +7,7 @@ export const LiveRosterTable: React.FC<LiveRosterTableProps> = ({
   members,
   onManualCheckin,
   isLoading = false,
+  isOnlineEvent = false,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedArea, setSelectedArea] = useState("ALL");
@@ -103,6 +104,7 @@ export const LiveRosterTable: React.FC<LiveRosterTableProps> = ({
               <th className="px-6 py-3 font-semibold">Socio</th>
               <th className="px-6 py-3 font-semibold">Ruolo / Area</th>
               <th className="px-6 py-3 font-semibold">Stato presenze</th>
+              {isOnlineEvent && <th className="px-6 py-3 font-semibold">Durata</th>}
               {onManualCheckin && <th className="px-6 py-3 font-semibold text-right">Azioni Rapide</th>}
             </tr>
           </thead>
@@ -165,6 +167,17 @@ export const LiveRosterTable: React.FC<LiveRosterTableProps> = ({
                         )}
                       </div>
                     </td>
+                    {isOnlineEvent && (
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {member.durata_minuti !== undefined && member.durata_minuti > 0 ? (
+                          <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">
+                            {member.durata_minuti} min
+                          </span>
+                        ) : (
+                          <span className="text-sm text-gray-400 dark:text-gray-600">-</span>
+                        )}
+                      </td>
+                    )}
                     {onManualCheckin && (
                       <td className="px-6 py-4 whitespace-nowrap text-right text-xs">
                         <div className="flex items-center justify-end gap-1.5">

@@ -12,10 +12,12 @@ export interface RosterMember {
   attendance_modality?: string;
   delega_a?: string;
   is_preregistrato?: boolean;
+  durata_minuti?: number;
 }
 
 export interface LiveRosterTableProps {
   members: RosterMember[];
   onManualCheckin?: (socioId: number, status: "IN_PRESENZA" | "ONLINE" | "GIUSTIFICATO" | "PRE_REGISTRATO" | "ASSENTE", delega_a?: string) => Promise<void>;
   isLoading?: boolean;
+  isOnlineEvent?: boolean;
 }
