@@ -150,15 +150,15 @@ export default function MemberAnalyticsPage() {
   const normalCount = analytics.filter((a) => a.warning_level === "NORMAL").length;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            <h1 className="text-2xl font-bold tracking-tight text-white">
               Analisi Membri
             </h1>
-            <p className="text-sm text-gray-500 dark:text-zinc-400">
+            <p className="text-sm text-white/80">
               Monitora il tasso di partecipazione dei soci, le assenze consecutive e le soglie di alert statutarie
             </p>
           </div>
@@ -174,7 +174,7 @@ export default function MemberAnalyticsPage() {
             />
             <label
               htmlFor="csv-upload-input"
-              className={`cursor-pointer inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-zinc-805 rounded text-sm font-semibold shadow-xs transition-colors ${importing ? "opacity-50 cursor-not-allowed" : ""
+              className={`cursor-pointer inline-flex items-center gap-2 px-4 py-2 border border-transparent bg-white dark:bg-zinc-900 text-[#1f295c] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-full text-sm font-semibold shadow-md transition-colors ${importing ? "opacity-50 cursor-not-allowed" : ""
                 }`}
             >
               {importing ? (
@@ -189,13 +189,13 @@ export default function MemberAnalyticsPage() {
 
         {/* Success / Alert Banner */}
         {importResult && (
-          <div className="p-4 bg-green-50 border border-green-200 dark:bg-green-950/20 dark:border-green-900 rounded-lg flex items-start gap-3 shadow-xs">
-            <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
+          <div className="p-4 bg-green-50 border border-green-200 rounded-xl flex items-start gap-3 shadow-md">
+            <CheckCircle className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
             <div className="flex-1">
-              <h3 className="text-sm font-bold text-green-800 dark:text-green-300">
+              <h3 className="text-sm font-bold text-green-800">
                 Importazione completata con successo!
               </h3>
-              <p className="text-xs text-green-700 dark:text-green-400 mt-1">
+              <p className="text-xs text-green-700 mt-1">
                 Aggiunti: <span className="font-bold">{importResult.added}</span> nuovi soci | Aggiornati:{" "}
                 <span className="font-bold">{importResult.updated}</span> esistenti (Soci Attivi:{" "}
                 <span className="font-bold">{importResult.active}</span>, Alumni:{" "}
@@ -204,7 +204,7 @@ export default function MemberAnalyticsPage() {
             </div>
             <button
               onClick={() => setImportResult(null)}
-              className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-xs font-bold uppercase"
+              className="text-green-600 hover:text-green-800 text-xs font-bold uppercase"
             >
               Chiudi
             </button>
@@ -214,50 +214,54 @@ export default function MemberAnalyticsPage() {
         {/* Dashboard KPIs */}
         {!loading && !error && (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 p-4 rounded-lg flex items-center gap-4 shadow-sm">
-              <div className="p-3 bg-blue-50 dark:bg-blue-950/40 rounded-full">
-                <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+            <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 p-6 rounded-2xl flex items-center gap-5 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-full relative overflow-hidden group">
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none bg-[#2b397c]/10 dark:bg-[#2b397c]/30" />
+              <div className="p-4 shrink-0 rounded-2xl bg-[#2b397c]/10 dark:bg-[#2b397c]/30 shadow-inner">
+                <Users className="h-8 w-8 text-[#2b397c] dark:text-blue-400" />
               </div>
-              <div>
-                <p className="text-xs font-semibold text-gray-500 dark:text-zinc-400 uppercase">Soci Attivi</p>
-                <p className="text-xl font-black text-gray-900 dark:text-white mt-0.5">{totalCount}</p>
-              </div>
-            </div>
-
-            <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 p-4 rounded-lg flex items-center gap-4 shadow-sm">
-              <div className="p-3 bg-green-50 dark:bg-green-950/40 rounded-full">
-                <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-gray-500 dark:text-zinc-400 uppercase">Regolare</p>
-                <p className="text-xl font-black text-gray-900 dark:text-white mt-0.5">{normalCount}</p>
+              <div className="flex-1 min-w-0 z-10">
+                <p className="text-[13px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide truncate">Soci Attivi</p>
+                <p className="text-3xl font-black text-gray-900 dark:text-white mt-1 leading-none tracking-tight">{totalCount}</p>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 p-4 rounded-lg flex items-center gap-4 shadow-sm">
-              <div className="p-3 bg-yellow-50 dark:bg-yellow-950/45 rounded-full">
-                <AlertTriangle className="h-6 w-6 text-yellow-600 dark:text-yellow-450" />
+            <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 p-6 rounded-2xl flex items-center gap-5 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-full relative overflow-hidden group">
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none bg-green-50 dark:bg-green-900/20" />
+              <div className="p-4 shrink-0 rounded-2xl bg-green-50 dark:bg-green-900/20 shadow-inner">
+                <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-500" />
               </div>
-              <div>
-                <p className="text-xs font-semibold text-gray-500 dark:text-zinc-400 uppercase">Alert</p>
-                <p className="text-xl font-black text-gray-900 dark:text-white mt-0.5">{preAlertCount}</p>
+              <div className="flex-1 min-w-0 z-10">
+                <p className="text-[13px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide truncate">Regolare</p>
+                <p className="text-3xl font-black text-gray-900 dark:text-white mt-1 leading-none tracking-tight">{normalCount}</p>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 p-4 rounded-lg flex items-center gap-4 shadow-sm">
-              <div className="p-3 bg-red-50 dark:bg-red-950/40 rounded-full">
-                <ShieldAlert className="h-6 w-6 text-red-600 dark:text-red-400" />
+            <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 p-6 rounded-2xl flex items-center gap-5 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-full relative overflow-hidden group">
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none bg-yellow-50 dark:bg-yellow-900/20" />
+              <div className="p-4 shrink-0 rounded-2xl bg-yellow-50 dark:bg-yellow-900/20 shadow-inner">
+                <AlertTriangle className="h-8 w-8 text-yellow-600 dark:text-yellow-500" />
               </div>
-              <div>
-                <p className="text-xs font-semibold text-gray-500 dark:text-zinc-400 uppercase">Critica</p>
-                <p className="text-xl font-black text-gray-900 dark:text-white mt-0.5">{criticalCount}</p>
+              <div className="flex-1 min-w-0 z-10">
+                <p className="text-[13px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide truncate">Alert</p>
+                <p className="text-3xl font-black text-gray-900 dark:text-white mt-1 leading-none tracking-tight">{preAlertCount}</p>
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 p-6 rounded-2xl flex items-center gap-5 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-full relative overflow-hidden group">
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none bg-red-50 dark:bg-red-900/20" />
+              <div className="p-4 shrink-0 rounded-2xl bg-red-50 dark:bg-red-900/20 shadow-inner">
+                <ShieldAlert className="h-8 w-8 text-red-600 dark:text-red-500" />
+              </div>
+              <div className="flex-1 min-w-0 z-10">
+                <p className="text-[13px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide truncate">Critica</p>
+                <p className="text-3xl font-black text-gray-900 dark:text-white mt-1 leading-none tracking-tight">{criticalCount}</p>
               </div>
             </div>
           </div>
         )}
 
         {/* Filter controls */}
-        <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-lg p-4 flex flex-col md:flex-row gap-4 items-center justify-between shadow-sm">
+        <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-5 flex flex-col md:flex-row gap-4 items-center justify-between shadow-lg">
           <div className="relative w-full md:max-w-md">
             <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-4 w-4 text-gray-400" />
@@ -267,17 +271,17 @@ export default function MemberAnalyticsPage() {
               placeholder="Cerca socio per nome o email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-zinc-700 rounded bg-white dark:bg-zinc-900 text-sm font-semibold text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-950 text-sm font-semibold text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
 
           <div className="flex flex-wrap gap-3 w-full md:w-auto">
             <div className="flex items-center gap-1.5">
-              <span className="text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">Stato:</span>
+              <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stato:</span>
               <select
                 value={selectedWarningLevel}
                 onChange={(e) => setSelectedWarningLevel(e.target.value)}
-                className="px-2.5 py-1.5 border border-gray-300 dark:border-zinc-700 rounded bg-white dark:bg-zinc-900 text-sm font-semibold text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                className="px-2.5 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-950 text-sm font-semibold text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="ALL">Tutti</option>
                 <option value="NORMAL">Regolare</option>
@@ -287,11 +291,11 @@ export default function MemberAnalyticsPage() {
             </div>
 
             <div className="flex items-center gap-1.5">
-              <span className="text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">Area:</span>
+              <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Area:</span>
               <select
                 value={selectedArea}
                 onChange={(e) => setSelectedArea(e.target.value)}
-                className="px-2.5 py-1.5 border border-gray-300 dark:border-zinc-700 rounded bg-white dark:bg-zinc-900 text-sm font-semibold text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                className="px-2.5 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-950 text-sm font-semibold text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="ALL">Tutte</option>
                 {uniqueAreas.map((area) => (
@@ -308,46 +312,46 @@ export default function MemberAnalyticsPage() {
         {loading ? (
           <div className="flex flex-col items-center justify-center p-12 space-y-3">
             <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
-            <span className="text-sm font-semibold text-gray-500 dark:text-zinc-400">Analisi dati in corso...</span>
+            <span className="text-sm font-semibold text-white">Analisi dati in corso...</span>
           </div>
         ) : error ? (
-          <div className="p-4 bg-red-100 border border-red-200 dark:bg-red-950/20 dark:border-red-900 text-red-700 dark:text-red-300 rounded text-sm font-medium">
+          <div className="p-4 bg-red-100 border border-red-200 text-red-700 rounded-xl text-sm font-medium">
             {error}
           </div>
         ) : processedAnalytics.length === 0 ? (
-          <div className="text-center py-12 border border-dashed border-gray-300 dark:border-zinc-800 rounded-lg">
-            <Users className="h-10 w-10 text-gray-400 mx-auto mb-2" />
-            <p className="text-sm font-medium text-gray-500 dark:text-zinc-400">Nessun socio corrisponde ai filtri selezionati.</p>
+          <div className="text-center py-12 border border-dashed border-gray-300/30 rounded-2xl bg-white/5">
+            <Users className="h-10 w-10 text-white/50 mx-auto mb-2" />
+            <p className="text-sm font-medium text-white/80">Nessun socio corrisponde ai filtri selezionati.</p>
           </div>
         ) : (
-          <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-lg overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-lg">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-800">
-                <thead className="bg-gray-50 dark:bg-zinc-850">
+                <thead className="bg-gray-50 dark:bg-zinc-950">
                   <tr>
                     <th
                       scope="col"
                       onClick={() => handleSort("nome")}
-                      className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-800"
+                      className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-800"
                     >
                       <div className="flex items-center gap-1">
                         Socio <ArrowUpDown className="h-3 w-3" />
                       </div>
                     </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Ruolo / Area
                     </th>
 
                     <th
                       scope="col"
                       onClick={() => handleSort("assembly_absences")}
-                      className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-800"
+                      className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-800"
                     >
                       <div className="flex items-center gap-1">
                         Assenze Assemblea <ArrowUpDown className="h-3 w-3" />
                       </div>
                     </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Stato
                     </th>
                   </tr>
@@ -356,7 +360,7 @@ export default function MemberAnalyticsPage() {
                   {processedAnalytics.map((member) => (
                     <tr
                       key={member.socio_id}
-                      className={`hover:bg-gray-50 dark:hover:bg-zinc-800/20 ${member.warning_level === "CRITICAL"
+                      className={`hover:bg-gray-50 dark:hover:bg-zinc-800/50 ${member.warning_level === "CRITICAL"
                           ? "bg-red-500/5 hover:bg-red-500/10"
                           : member.warning_level === "PRE_ALERT"
                             ? "bg-yellow-500/5 hover:bg-yellow-500/10"
@@ -366,12 +370,12 @@ export default function MemberAnalyticsPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex flex-col">
                           <span className="font-bold text-gray-900 dark:text-white">{member.nome}</span>
-                          <span className="text-xs text-gray-500 dark:text-zinc-400">{member.email}</span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">{member.email}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex flex-col">
-                          <span className="font-semibold text-gray-800 dark:text-zinc-200 text-xs">
+                          <span className="font-semibold text-gray-800 dark:text-gray-200 text-xs">
                             {member.ruolo || "Socio"}
                           </span>
                           <span className="text-xs text-gray-400">{member.area_lavoro || "-"}</span>
@@ -382,10 +386,10 @@ export default function MemberAnalyticsPage() {
                         <div className="flex flex-col items-center sm:items-start gap-1">
                           <div>
                             <span className={`px-2 py-0.5 rounded text-xs font-semibold ${member.assembly_absences >= 2
-                                ? "bg-red-100 text-red-800 dark:bg-red-950/30 dark:text-red-300"
+                                ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
                                 : member.assembly_absences === 1
-                                  ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-950/30 dark:text-yellow-300"
-                                  : "bg-green-100 text-green-800 dark:bg-green-950/30 dark:text-green-300"
+                                  ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300"
+                                  : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
                               }`}>
                               {member.assembly_absences} assenze
                             </span>
@@ -396,7 +400,7 @@ export default function MemberAnalyticsPage() {
                           {member.missed_assembly_names && member.missed_assembly_names.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-1">
                               {member.missed_assembly_names.map((name, idx) => (
-                                <span key={idx} className="text-[10px] bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-300 px-1.5 py-0.5 rounded-sm">
+                                <span key={idx} className="text-[10px] bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400 px-1.5 py-0.5 rounded-sm">
                                   {name}
                                 </span>
                               ))}
@@ -406,15 +410,15 @@ export default function MemberAnalyticsPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {member.warning_level === "CRITICAL" ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-bold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 border border-red-200 dark:border-red-800/50">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-bold bg-red-100 text-red-800 border border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800/50">
                             <AlertCircle className="h-3 w-3" /> Critica
                           </span>
                         ) : member.warning_level === "PRE_ALERT" ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-bold bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-305 border border-yellow-200 dark:border-yellow-800/50">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-bold bg-yellow-100 text-yellow-800 border border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-800/50">
                             <AlertTriangle className="h-3 w-3" /> Alert
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-bold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border border-green-200 dark:border-green-800/50">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-bold bg-green-100 text-green-800 border border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800/50">
                             <CheckCircle className="h-3 w-3" /> Regolare
                           </span>
                         )}

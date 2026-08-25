@@ -377,13 +377,13 @@ export default function Dashboard() {
       {/* Main Grid Layout */}
       <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
         {error && (
-          <div className="p-4 bg-red-100 border border-red-200 dark:bg-red-950/20 dark:border-red-900 text-red-700 dark:text-red-300 rounded text-sm font-medium">
+          <div className="p-4 bg-red-100 border border-red-200 text-red-700 rounded-xl text-sm font-medium">
             {error}
           </div>
         )}
 
         {/* Selected Event details & Selection bar */}
-        <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-lg p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg">
           <div className="flex flex-col md:flex-row md:items-center gap-4">
             <span className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               Evento Selezionato:
@@ -392,7 +392,7 @@ export default function Dashboard() {
               <select
                 value={selectedEventId || ""}
                 onChange={(e) => setSelectedEventId(Number(e.target.value))}
-                className="px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded bg-white dark:bg-zinc-900 text-sm font-semibold text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                className="px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-950 text-sm font-semibold text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               >
                 {events.map((evt) => (
                   <option key={evt.id} value={evt.id}>
@@ -401,7 +401,7 @@ export default function Dashboard() {
                 ))}
               </select>
             ) : (
-              <span className="text-sm font-medium text-gray-400 italic">Nessun evento attivo. Creane uno per iniziare.</span>
+              <span className="text-sm font-medium text-gray-400 dark:text-gray-500 italic">Nessun evento attivo. Creane uno per iniziare.</span>
             )}
           </div>
 
@@ -409,7 +409,7 @@ export default function Dashboard() {
             <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-gray-500 dark:text-gray-400">
 
               {selectedEvent.modalita === "ONLINE" || selectedEvent.modalita === "ONLINE_ONLY" ? (
-                <label className="flex items-center gap-1 px-2 py-1 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-300 rounded border border-gray-300 dark:border-zinc-700 cursor-pointer font-sans text-[11px] font-medium transition-colors">
+                <label className="flex items-center gap-1 px-2 py-1 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-gray-700 dark:text-gray-300 rounded-md border border-gray-300 dark:border-zinc-700 cursor-pointer font-sans text-[11px] font-medium transition-colors">
                   <Upload className="h-3 w-3" />
                   Importa Teams (CSV)
                   <input
@@ -420,7 +420,7 @@ export default function Dashboard() {
                   />
                 </label>
               ) : (
-                <label className="flex items-center gap-1 px-2 py-1 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-300 rounded border border-gray-300 dark:border-zinc-700 cursor-pointer font-sans text-[11px] font-medium transition-colors">
+                <label className="flex items-center gap-1 px-2 py-1 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-gray-700 dark:text-gray-300 rounded-md border border-gray-300 dark:border-zinc-700 cursor-pointer font-sans text-[11px] font-medium transition-colors">
                   <Upload className="h-3 w-3" />
                   Importa deleghe (CSV)
                   <input
@@ -459,7 +459,7 @@ export default function Dashboard() {
         {showCreateForm && (
           <form
             onSubmit={handleCreateEvent}
-            className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-lg p-5 space-y-4 shadow-md max-w-lg"
+            className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 space-y-4 shadow-xl max-w-lg"
           >
             <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2 text-base">
               <PlusCircle className="h-5 w-5 text-blue-500" /> Crea Nuovo Evento
@@ -473,7 +473,7 @@ export default function Dashboard() {
                   placeholder="Es. Assemblea Ordinaria"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  className="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded bg-white dark:bg-zinc-900 text-sm text-gray-900 dark:text-white"
+                  className="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-950 text-sm text-gray-900 dark:text-white"
                 />
               </div>
 
@@ -482,7 +482,7 @@ export default function Dashboard() {
                 <select
                   value={newType}
                   onChange={(e) => setNewType(e.target.value)}
-                  className="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded bg-white dark:bg-zinc-900 text-sm text-gray-900 dark:text-white"
+                  className="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-950 text-sm text-gray-900 dark:text-white"
                 >
                   <option value="FORMAZIONE">Formazione</option>
                   <option value="ASSEMBLEA">Assemblea</option>
@@ -495,7 +495,7 @@ export default function Dashboard() {
                 <select
                   value={newModality}
                   onChange={(e) => setNewModality(e.target.value)}
-                  className="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded bg-white dark:bg-zinc-900 text-sm text-gray-900 dark:text-white"
+                  className="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-950 text-sm text-gray-900 dark:text-white"
                 >
                   <option value="HYBRID">Ibrida</option>
                   <option value="IN_PRESENZA">In Presenza</option>
@@ -528,11 +528,11 @@ export default function Dashboard() {
         {/* Real-time KPIs */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <KpiCard
-            title="Pre-Registrati"
+            title="Prenotati"
             value={loading ? "-" : preRegisteredCount}
             icon={<Users className="h-5 w-5" />}
             variant="default"
-            description={`su ${totalPreRegisteredCount} pre-registrati totali`}
+            description={`su ${totalPreRegisteredCount} prenotati totali`}
           />
           <KpiCard
             title="In Presenza"
@@ -594,15 +594,15 @@ export default function Dashboard() {
       {/* Error Modal */}
       {checkinError && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-zinc-800">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-zinc-800 flex justify-between items-center bg-red-50 dark:bg-red-900/10">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-zinc-800">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-zinc-800 flex justify-between items-center bg-red-50 dark:bg-red-900/20">
               <h3 className="text-lg font-semibold text-red-600 dark:text-red-400 flex items-center gap-2">
                 <AlertCircle className="w-5 h-5" />
                 Errore Operazione
               </h3>
               <button 
                 onClick={() => setCheckinError(null)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -610,10 +610,10 @@ export default function Dashboard() {
             <div className="px-6 py-5 text-gray-700 dark:text-gray-300">
               {checkinError}
             </div>
-            <div className="px-6 py-4 bg-gray-50 dark:bg-zinc-950 border-t border-gray-200 dark:border-zinc-800 flex justify-end">
+            <div className="px-6 py-4 bg-gray-50 dark:bg-zinc-800/50 border-t border-gray-200 dark:border-zinc-800 flex justify-end">
               <button
                 onClick={() => setCheckinError(null)}
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-800 dark:text-gray-200 rounded font-medium transition-colors"
+                className="px-4 py-2 bg-gray-200 dark:bg-zinc-700 hover:bg-gray-300 dark:hover:bg-zinc-600 text-gray-800 dark:text-white rounded font-medium transition-colors"
               >
                 Chiudi
               </button>
