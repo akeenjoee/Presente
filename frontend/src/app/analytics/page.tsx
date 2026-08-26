@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Search, Filter, ArrowUpDown, AlertCircle, AlertTriangle, CheckCircle, Loader2, Users, FileSpreadsheet, ShieldAlert } from "lucide-react";
+import { Search, Filter, ArrowUpDown, AlertCircle, AlertTriangle, CheckCircle, Loader2, Users, FileSpreadsheet, ShieldAlert, Database } from "lucide-react";
 
 interface MemberAnalytics {
   socio_id: number;
@@ -35,6 +35,9 @@ export default function MemberAnalyticsPage() {
   const [selectedArea, setSelectedArea] = useState<string>("ALL");
   const [sortField, setSortField] = useState<SortField>("nome");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+
+  // Sync State
+  const [syncing, setSyncing] = useState(false);
 
   // CSV Import State
   const [importing, setImporting] = useState(false);
@@ -81,6 +84,41 @@ export default function MemberAnalyticsPage() {
       setImporting(false);
       // Reset file input value to allow uploading the same file again
       e.target.value = "";
+    }
+  };
+
+  const handlePostgresSync = async () => {
+    setSyncing(true);
+    setError("");
+    setImportResult(null);
+
+    try {
+      const res = await fetch("http://localhost:8000/api/members/sync-postgres", {
+        method: "POST",
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.detail || "Errore durante la sincronizzazione con Postgres");
+      }
+
+      setImportResult({
+        added: data.added,
+        updated: data.updated,
+        active: data.total_synced,
+        alumni: 0
+      });
+      // Refresh the analytics table
+      fetchAnalytics();
+
+      // Auto clear result banner after 12 seconds
+      setTimeout(() => {
+        setImportResult(null);
+      }, 12000);
+    } catch (err: any) {
+      setError(err.message || "Impossibile sincronizzare con Postgres");
+    } finally {
+      setSyncing(false);
     }
   };
 
@@ -163,7 +201,7 @@ export default function MemberAnalyticsPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <input
               type="file"
               accept=".csv"
@@ -172,6 +210,19 @@ export default function MemberAnalyticsPage() {
               onChange={handleCsvUpload}
               disabled={importing}
             />
+            <button
+              onClick={handlePostgresSync}
+              disabled={syncing}
+              className={`cursor-pointer inline-flex items-center gap-2 px-4 py-2 border border-transparent bg-blue-600 text-white hover:bg-blue-700 rounded-full text-sm font-semibold shadow-md transition-colors ${syncing ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+            >
+              {syncing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Database className="h-4 w-4" />
+              )}
+              {syncing ? "Sincronizzazione..." : "Sync dal database"}
+            </button>
             <label
               htmlFor="csv-upload-input"
               className={`cursor-pointer inline-flex items-center gap-2 px-4 py-2 border border-transparent bg-white dark:bg-zinc-900 text-[#1f295c] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-full text-sm font-semibold shadow-md transition-colors ${importing ? "opacity-50 cursor-not-allowed" : ""
@@ -361,10 +412,10 @@ export default function MemberAnalyticsPage() {
                     <tr
                       key={member.socio_id}
                       className={`hover:bg-gray-50 dark:hover:bg-zinc-800/50 ${member.warning_level === "CRITICAL"
-                          ? "bg-red-500/5 hover:bg-red-500/10"
-                          : member.warning_level === "PRE_ALERT"
-                            ? "bg-yellow-500/5 hover:bg-yellow-500/10"
-                            : ""
+                        ? "bg-red-500/5 hover:bg-red-500/10"
+                        : member.warning_level === "PRE_ALERT"
+                          ? "bg-yellow-500/5 hover:bg-yellow-500/10"
+                          : ""
                         }`}
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -386,10 +437,10 @@ export default function MemberAnalyticsPage() {
                         <div className="flex flex-col items-center sm:items-start gap-1">
                           <div>
                             <span className={`px-2 py-0.5 rounded text-xs font-semibold ${member.assembly_absences >= 2
-                                ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
-                                : member.assembly_absences === 1
-                                  ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300"
-                                  : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                              ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
+                              : member.assembly_absences === 1
+                                ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300"
+                                : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
                               }`}>
                               {member.assembly_absences} assenze
                             </span>
