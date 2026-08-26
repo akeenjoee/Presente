@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, Filter, Calendar, FileText, ChevronDown, ChevronUp, Loader2, Users, LayoutDashboard } from "lucide-react";
+import { Search, Filter, Calendar, FileText, ChevronDown, ChevronUp, Loader2, Users, LayoutDashboard, PlusCircle } from "lucide-react";
 import { Button } from "@/components/atoms/Button/Button";
 import { StatusBadge } from "@/components/atoms/StatusBadge/StatusBadge";
 import { MinutesExportModal } from "@/components/organisms/MinutesExportModal/MinutesExportModal";
@@ -143,13 +143,22 @@ export default function EventArchive() {
     <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">
-            Archivio Eventi
-          </h1>
-          <p className="text-sm text-white/80">
-            Consulta la cronologia degli eventi passati, monitora le presenze e scarica i verbali ufficiali delle assemblee
-          </p>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-white">
+              Archivio Eventi
+            </h1>
+            <p className="text-sm text-white/80">
+              Consulta la cronologia degli eventi passati, monitora le presenze e scarica i verbali ufficiali delle assemblee
+            </p>
+          </div>
+          
+          <button
+            onClick={() => window.location.href = "/dashboard?create=true"}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-sm font-semibold transition-colors shadow-md shrink-0"
+          >
+            <PlusCircle className="h-5 w-5" /> Nuovo Evento
+          </button>
         </div>
 
         {/* Search and Filters */}
@@ -294,7 +303,7 @@ export default function EventArchive() {
                                     <Link href={`/dashboard?event_id=${evt.id}`}>
                                       <Button
                                         variant="primary"
-                                        className="gap-2 text-xs py-1.5 px-3 bg-[#2b397c] hover:bg-[#1f295c] text-white rounded-full"
+                                        className="gap-2 text-xs py-1.5 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full"
                                       >
                                         <LayoutDashboard className="h-4 w-4" /> Apri Registro Live
                                       </Button>

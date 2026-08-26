@@ -90,7 +90,7 @@ function CheckInContent() {
   }, [eventIdParam]);
 
   const handleLogout = () => {
-    signOut();
+    signOut({ callbackUrl: '/login' });
     setSuccess(false);
     setError("");
   };
@@ -187,7 +187,7 @@ function CheckInContent() {
 
         <button 
           onClick={() => signIn("azure-ad")}
-          className="w-full bg-[#2b397c] hover:bg-[#1f295c] text-white py-3 rounded-md font-semibold flex items-center justify-center gap-2 transition-colors shadow-md"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-full font-semibold flex items-center justify-center gap-2 transition-colors shadow-md"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
             <path d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zm12.6 0H12.6V0H24v11.4z" />
@@ -328,7 +328,7 @@ function CheckInContent() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => setModality("IN_PRESENZA")}
-                className={`py-3 px-4 border rounded font-semibold text-sm transition-colors flex items-center justify-center gap-2 ${
+                className={`py-3 px-4 border rounded-full font-semibold text-sm transition-colors flex items-center justify-center gap-2 ${
                   modality === "IN_PRESENZA"
                     ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
                     : "border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800 text-gray-700 dark:text-gray-300"
@@ -338,7 +338,7 @@ function CheckInContent() {
               </button>
               <button
                 onClick={() => setModality("ONLINE")}
-                className={`py-3 px-4 border rounded font-semibold text-sm transition-colors flex items-center justify-center gap-2 ${
+                className={`py-3 px-4 border rounded-full font-semibold text-sm transition-colors flex items-center justify-center gap-2 ${
                   modality === "ONLINE"
                     ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400"
                     : "border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800 text-gray-700 dark:text-gray-300"
