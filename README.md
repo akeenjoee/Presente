@@ -20,7 +20,7 @@ Presente! risolve le inefficienze legate al monitoraggio delle presenze attraver
 
 ### 🌟 Key Features:
 * **Hybrid Check-in Support**: 
-  * Sistema di check-in in presenza tramite **Dynamic QR Code** crittografato (anti-tampering) che via il dashboard.
+  * Sistema di check-in in presenza tramite **Dynamic QR Code** crittografato (anti-tampering) via dashboard.
 * **Pre-Assembly Form Import**: Importazione massiva dei dati provenienti dai moduli Forms pre-assemblea. Il sistema riconosce e traccia automaticamente le **Deleghe** e le **Assenze Giustificate** preventivamente, aggiornando lo stato dei soci senza intervento manuale.
 * **Global Absence Streak & Alert Engine**: Motore analitico che calcola in tempo reale il rischio di decadimento in conformità allo statuto.
   * **🔴 Critica (Red Alert)**: $\ge 2$ assenze *consecutive* in Assemblea.
@@ -28,7 +28,8 @@ Presente! risolve le inefficienze legate al monitoraggio delle presenze attraver
 * **Role-Based Access Control (RBAC)**: Integrazione profonda con Azure Active Directory.
   * Check-in accessibile a chiunque possegga un account `@jemore.it`.
   * Dashboard Admin rigorosamente riservata ai membri del Board e Responsabili.
-* **One-Click Minutes Export**: Esportazione istantanea in **PDF** e **CSV** del registro presenze ufficiale, già formattato per essere allegato come documento formale ai Verbali d'Assemblea.
+* **One-Click Minutes Export**: Esportazione istantanea in **PDF** e **CSV** del registro presenze ufficiale, formattato per i Verbali d'Assemblea.
+
 
 ---
 
@@ -60,7 +61,8 @@ Presente!/
 
 ## 3. Database Architecture & ER Diagram
 
-Il database (SQLite in sviluppo) è progettato per garantire integrità referenziale, tracciando con precisione chi partecipa, come partecipa e chi eventualmente delega.
+Il database è ospitato su **PostgreSQL** in ambiente di produzione. Il sistema è progettato per garantire integrità referenziale, tracciando con precisione chi partecipa, come partecipa e chi eventualmente delega.
+Inoltre è presente uno script di sincronizzazione (`postgres_sync.py`) che si occupa di popolare l'organigramma e mantenere aggiornati i ruoli leggendo da una sorgente dati remota pre-esistente.
 
 ```mermaid
 erDiagram
@@ -120,8 +122,8 @@ Posizionato in `backend/.env`.
 # Modalità Sviluppo (True ignora la firma JWT per facilitare i test)
 DEV_MODE=True
 
-# Credenziali Database
-DATABASE_URL=sqlite:///./presente.db
+# Credenziali Database (PostgreSQL)
+DATABASE_URL=postgresql://user:password@host:port/dbname
 
 # Sicurezza (Generazione HMAC QR Code)
 QR_SECRET_KEY=la-tua-chiave-segreta-molto-complessa-321
