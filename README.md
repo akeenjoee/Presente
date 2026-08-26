@@ -76,14 +76,14 @@ erDiagram
         string email
         string ruolo
         string area_lavoro
-        string stato "ATTIVO/ALUMNI"
+        string stato
     }
 
     EVENTI {
         int id PK
         string titolo
-        string tipo "ASSEMBLEA/RD/ALTRO"
-        string modalita "PRESENZA/ONLINE/IBRIDA"
+        string tipo
+        string modalita
         datetime data_ora
         boolean is_attivo
     }
@@ -92,10 +92,10 @@ erDiagram
         int id PK
         int evento_id FK
         int socio_id FK
-        string modalita "IN_PRESENZA/ONLINE/GIUSTIFICATO"
+        string modalita
         string stato_presenza
-        string delega_a "Email del delegato (se presente)"
-        int durata_minuti "Da Teams Parser"
+        string delega_a
+        int durata_minuti
         datetime registrato_il
     }
 
