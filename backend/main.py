@@ -14,6 +14,7 @@ from database import engine, Base, get_db, SessionLocal
 from parsers import parse_and_seed_csv, possible_paths, parse_and_seed_csv_text
 from auth import get_current_user, generate_qr_token, verify_qr_token, DEV_MODE
 import services
+from postgres_sync import sync_soci_from_postgres
 
 # Initialize DB tables
 Base.metadata.create_all(bind=engine)
@@ -92,9 +93,14 @@ class CheckinPayload(BaseModel):
 def startup_db_seed():
     db = SessionLocal()
     try:
+        # 1. Attempt to sync from PostgreSQL first
+        print("Starting up... Attempting to sync members from PostgreSQL.")
+        sync_result = sync_soci_from_postgres(db)
+        
+        # 2. If Postgres failed and DB is completely empty, fallback to CSV seed
         count = db.query(models.Socio).count()
         if count == 0:
-            print("Database empty. Attempting to seed from CSV...")
+            print("Database still empty (Postgres sync failed or had no data). Attempting to seed from CSV fallback...")
             csv_file = None
             for p in possible_paths:
                 import os
@@ -106,7 +112,7 @@ def startup_db_seed():
             else:
                 print("Could not find CSV file to seed database.")
         else:
-            print(f"Database already has {count} members. Skipping seed.")
+            print(f"Database has {count} members.")
     finally:
         db.close()
 
@@ -417,6 +423,16 @@ async def import_members(file: UploadFile = File(...), db: Session = Depends(get
         return {"status": "success", "summary": result}
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Errore durante l'importazione dell'anagrafica: {str(e)}")
+
+@app.post("/api/members/sync-postgres")
+def trigger_postgres_sync(db: Session = Depends(get_db)):
+    """
+    Manually triggers a synchronization of the members table from the external PostgreSQL database.
+    """
+    result = sync_soci_from_postgres(db)
+    if result.get("status") == "error":
+        raise HTTPException(status_code=500, detail=result.get("message", "Sync failed"))
+    return result
 
 @app.get("/api/events/{event_id}/export-minutes/csv")
 def export_minutes_csv(event_id: int, quorum_pct: float = Query(0.5, description="Custom quorum threshold percentage"), db: Session = Depends(get_db)):

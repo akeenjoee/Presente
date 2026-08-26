@@ -8,7 +8,7 @@ from fastapi import HTTPException, Security
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 # DEV_MODE: Set to True for local testing without Azure Entra configuration.
-DEV_MODE = False
+DEV_MODE = True
 
 # Secret key for generating/verifying dynamic QR code HMAC tokens.
 # In production, this must be a secure random key loaded from environment variables.
@@ -103,8 +103,8 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(
         # In DEV_MODE, attempt to decode token without verifying signature,
         # or fallback to returning a mock user dict if the token isn't a valid JWT.
         try:
-            # Decode payload without verifying signature
-            payload = jwt.decode(token, options={"verify_signature": False})
+            # Decode payload without verifying signature and expiration for local dev
+            payload = jwt.decode(token, options={"verify_signature": False, "verify_exp": False})
             
             # Microsoft tokens put email in 'preferred_username', 'email', or 'upn'
             email = payload.get("preferred_username") or payload.get("email") or payload.get("upn")
