@@ -11,7 +11,6 @@ import {
   ShieldAlert,
   CheckCircle2,
   UserCircle,
-  QrCode,
   Wifi,
   MapPin,
   Loader2,
@@ -109,7 +108,7 @@ function CheckInContent() {
       const token = (session as any)?.idToken;
       const res = await fetch("http://localhost:8000/api/checkin", {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {})
         },
@@ -142,9 +141,16 @@ function CheckInContent() {
   // ── 1. No event_id in URL ─────────────────────────────────────────
   if (!eventIdParam) {
     return (
-      <div className="max-w-md w-full mx-auto my-12 p-10 bg-white dark:bg-zinc-900 rounded-xl shadow-2xl text-center">
+      <div className="max-w-md w-full mx-auto my-12 p-10 bg-white rounded-xl shadow-2xl text-center">
+        <div className="flex justify-center mb-5">
+          <img
+            src="/blu-verticale.svg"
+            alt="JEMORE Logo"
+            className="h-20 w-auto object-contain"
+          />
+        </div>
         <ShieldAlert className="h-12 w-12 text-red-500 mx-auto" />
-        <h2 className="text-xl font-bold text-[#1f295c] dark:text-white mt-4">
+        <h2 className="text-xl font-bold text-[#1f295c] mt-4">
           Link QR Non Valido
         </h2>
         <p className="text-sm text-gray-500 mt-2">
@@ -158,41 +164,42 @@ function CheckInContent() {
   // ── 2. Not logged in — SSO ───────────────────────────────────
   if (!session) {
     return (
-      <div className="max-w-md w-full mx-auto my-12 p-10 bg-white dark:bg-zinc-900 rounded-xl shadow-2xl text-center">
+      <div className="max-w-md w-full mx-auto my-12 p-10 bg-white rounded-xl shadow-2xl text-center">
         <div className="flex justify-center mb-5">
-           {/* Placeholder for Logo, using Lucide for now */}
-           <div className="p-3 border border-[#2b397c] dark:border-blue-400 rounded-full">
-             <QrCode className="h-8 w-8 text-[#2b397c] dark:text-blue-400" />
-           </div>
+          <img
+            src="/blu-verticale.svg"
+            alt="JEMORE Logo"
+            className="h-20 w-auto object-contain"
+          />
         </div>
-        
-        <h2 className="text-2xl font-bold text-[#1f295c] dark:text-white mb-1 tracking-tight">
+
+        <h2 className="text-md font-medium text-[#1f295c] mb-1 tracking-tight">
           Presente!
         </h2>
-        
+
         {!eventLoading && eventInfo ? (
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-8">
+          <p className="text-xl font-bold text-[#1f295c] mb-8">
             {eventInfo.titolo}
           </p>
         ) : (
-          <p className="text-sm text-gray-500 mb-8">
+          <p className="text-lg font-bold text-gray-500 mb-8">
             Check-in Assemblea
           </p>
         )}
 
-        <div className="bg-gray-50 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 text-[13px] font-medium py-3 px-4 rounded-lg mb-8 flex items-center justify-center gap-2 border border-gray-100 dark:border-zinc-700 shadow-sm">
-           <ShieldAlert className="h-4 w-4 text-[#1f295c] dark:text-blue-400" />
-           Utilizza il tuo account <strong>JEMORE</strong> per confermare la presenza.
+        <div className="bg-gray-50 text-gray-700 text-[13px] font-medium py-3 px-4 rounded-lg mb-8 flex items-center justify-center gap-2 border border-gray-100 shadow-sm">
+          <ShieldAlert className="h-4 w-4 text-[#1f295c]" />
+          Conferma la tua presenza.
         </div>
 
-        <button 
+        <button
           onClick={() => signIn("azure-ad")}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-full font-semibold flex items-center justify-center gap-2 transition-colors shadow-md"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
             <path d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zm12.6 0H12.6V0H24v11.4z" />
           </svg>
-          Accedi con Microsoft
+          Accedi con il tuo account JEMORE
         </button>
 
         <p className="text-[11px] text-gray-400 mt-10">
@@ -205,37 +212,43 @@ function CheckInContent() {
   // ── 3. Success ────────────────────────────────────────────────────
   if (success) {
     return (
-      <div className="max-w-md w-full mx-auto my-12 p-10 bg-white dark:bg-zinc-900 rounded-xl shadow-2xl text-center">
-        <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto animate-bounce" />
-        <h2 className="text-xl font-bold text-[#1f295c] dark:text-white mt-4">
+      <div className="max-w-md w-full mx-auto my-12 p-10 bg-white rounded-xl shadow-2xl text-center">
+        <div className="flex justify-center mb-5">
+          <img
+            src="/blu-verticale.svg"
+            alt="JEMORE Logo"
+            className="h-20 w-auto object-contain"
+          />
+        </div>
+        <CheckCircle2 className="h-10 w-10 text-green-500 mx-auto" />
+        <h2 className="text-xl font-bold text-[#1f295c] mt-4">
           Presenza Registrata!
         </h2>
-        <p className="text-sm text-green-600 dark:text-green-500 mt-1 font-medium">
+        <p className="text-sm text-green-600 mt-1 font-medium">
           {successMsg}
         </p>
 
-        <div className="mt-6 border border-gray-100 dark:border-zinc-800 rounded-lg bg-gray-50 dark:bg-zinc-800/50 p-4 text-left text-sm space-y-2">
+        <div className="mt-6 border border-gray-100 rounded-lg bg-gray-50 p-4 text-center scale-120 text-sm space-y-2">
           <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
             Riepilogo
           </p>
           <p>
-            <span className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Socio: </span>
-            <span className="font-bold text-gray-900 dark:text-white">{session.user?.name}</span>
+            <span className="text-xs text-gray-500 font-semibold">Socio: </span>
+            <span className="font-bold text-gray-900">{session.user?.name}</span>
           </p>
           {eventInfo && (
             <p>
-              <span className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Evento: </span>
-              <span className="font-bold text-gray-900 dark:text-white">{eventInfo.titolo}</span>
+              <span className="text-xs text-gray-500 font-semibold">Evento: </span>
+              <span className="font-bold text-gray-900">{eventInfo.titolo}</span>
             </p>
           )}
           <p>
-            <span className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Modalità: </span>
+            <span className="text-xs text-gray-500 font-semibold">Modalità: </span>
             <span
-              className={`inline-flex items-center gap-1 font-semibold ${
-                modality === "IN_PRESENZA"
-                  ? "text-blue-600 dark:text-blue-400"
-                  : "text-purple-600 dark:text-purple-400"
-              }`}
+              className={`inline-flex items-center gap-1 font-semibold ${modality === "IN_PRESENZA"
+                ? "text-blue-600"
+                : "text-purple-600"
+                }`}
             >
               {modality === "IN_PRESENZA" ? (
                 <><MapPin className="h-3 w-3" /> In Presenza</>
@@ -246,12 +259,6 @@ function CheckInContent() {
           </p>
         </div>
 
-        <button
-          onClick={() => { setSuccess(false); setError(""); }}
-          className="mt-5 text-xs text-blue-500 hover:underline font-medium"
-        >
-          Registra un&apos;altra presenza
-        </button>
       </div>
     );
   }
@@ -261,14 +268,22 @@ function CheckInContent() {
   const isInPersonOnly = eventInfo?.modalita === "IN_PERSON_ONLY";
 
   return (
-    <div className="max-w-md w-full mx-auto my-12 p-8 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl shadow-xl">
+    <div className="max-w-md w-full mx-auto my-12 p-10 bg-white rounded-xl shadow-2xl text-center">
+      <div className="flex justify-center mb-5">
+        <img
+          src="/blu-verticale.svg"
+          alt="JEMORE Logo"
+          className="h-20 w-auto object-contain"
+        />
+      </div>
+
       {/* User bar */}
-      <div className="flex items-center justify-between border-b border-gray-200 dark:border-zinc-800 pb-4 mb-5">
+      <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-5 text-left">
         <div className="flex items-center gap-2 text-sm">
           <UserCircle className="h-5 w-5 text-gray-400" />
           <div>
-            <p className="font-semibold text-[#1f295c] dark:text-white">{session.user?.name}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{session.user?.email}</p>
+            <p className="font-semibold text-[#1f295c]">{session.user?.name}</p>
+            <p className="text-xs text-gray-500">{session.user?.email}</p>
           </div>
         </div>
         <button onClick={handleLogout} title="Cambia profilo" className="text-gray-400 hover:text-red-500">
@@ -284,9 +299,9 @@ function CheckInContent() {
         </div>
       )}
 
-      <div className="space-y-5">
+      <div className="space-y-5 text-left">
         {/* Event card */}
-        <div className="bg-gray-50 dark:bg-zinc-800/50 p-4 border border-gray-200 dark:border-zinc-800 rounded-lg">
+        <div className="bg-gray-50 p-4 border border-gray-200 rounded-lg">
           <span className="text-xs text-gray-400 uppercase tracking-widest font-bold">
             Evento
           </span>
@@ -296,24 +311,24 @@ function CheckInContent() {
             </div>
           ) : eventInfo ? (
             <>
-              <h2 className="text-xl font-bold text-[#1f295c] dark:text-white mt-1">
+              <h2 className="text-xl font-bold text-[#1f295c] mt-1">
                 {eventInfo.titolo}
               </h2>
               <div className="flex items-center gap-2 mt-1.5">
-                <span className="text-xs px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold">
+                <span className="text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-700 font-semibold">
                   {eventInfo.tipo}
                 </span>
-                <span className="text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-300 font-semibold">
+                <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600 font-semibold">
                   {eventInfo.modalita === "HYBRID"
                     ? "Ibrida"
                     : eventInfo.modalita === "IN_PERSON_ONLY"
-                    ? "In Presenza"
-                    : "Online"}
+                      ? "In Presenza"
+                      : "Online"}
                 </span>
               </div>
             </>
           ) : (
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mt-1">
+            <h2 className="text-xl font-bold text-gray-900 mt-1">
               Evento #{eventIdParam}
             </h2>
           )}
@@ -328,21 +343,19 @@ function CheckInContent() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => setModality("IN_PRESENZA")}
-                className={`py-3 px-4 border rounded-full font-semibold text-sm transition-colors flex items-center justify-center gap-2 ${
-                  modality === "IN_PRESENZA"
-                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                    : "border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800 text-gray-700 dark:text-gray-300"
-                }`}
+                className={`py-3 px-4 border rounded-full font-semibold text-sm transition-colors flex items-center justify-center gap-2 ${modality === "IN_PRESENZA"
+                  ? "border-blue-500 bg-blue-50 text-blue-600"
+                  : "border-gray-200 hover:bg-gray-50:bg-zinc-800 text-gray-700"
+                  }`}
               >
                 <MapPin className="h-4 w-4" /> In Presenza
               </button>
               <button
                 onClick={() => setModality("ONLINE")}
-                className={`py-3 px-4 border rounded-full font-semibold text-sm transition-colors flex items-center justify-center gap-2 ${
-                  modality === "ONLINE"
-                    ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400"
-                    : "border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800 text-gray-700 dark:text-gray-300"
-                }`}
+                className={`py-3 px-4 border rounded-full font-semibold text-sm transition-colors flex items-center justify-center gap-2 ${modality === "ONLINE"
+                  ? "border-purple-500 bg-purple-50 text-purple-600"
+                  : "border-gray-200 hover:bg-gray-50:bg-zinc-800 text-gray-700"
+                  }`}
               >
                 <Wifi className="h-4 w-4" /> Online
               </button>
@@ -374,7 +387,7 @@ function CheckInContent() {
 
 export default function CheckInPage() {
   return (
-    <main className="flex-1 flex flex-col items-center justify-center min-h-screen p-6 bg-[#253264] dark:bg-zinc-950">
+    <main className="flex-1 flex flex-col items-center justify-center min-h-screen p-6 bg-[#253264]">
       <Suspense
         fallback={
           <div className="flex items-center gap-2 text-white text-sm">

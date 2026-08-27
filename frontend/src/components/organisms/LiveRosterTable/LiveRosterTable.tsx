@@ -203,8 +203,8 @@ export const LiveRosterTable: React.FC<LiveRosterTableProps> = ({
                             title="Segna online"
                             className={`flex items-center gap-1 px-2 py-1 rounded border text-xs font-semibold transition-colors ${
                               currentStatus === "ONLINE"
-                                ? "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800/50 cursor-default"
-                                : "bg-white dark:bg-zinc-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-zinc-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-800/50"
+                                ? "bg-green-100 text-green-700 border-green-300 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800/50 cursor-default"
+                                : "bg-white dark:bg-zinc-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-zinc-700 hover:bg-green-50 dark:hover:bg-green-900/30 hover:text-green-600 dark:hover:text-green-400 hover:border-green-300 dark:hover:border-green-800/50"
                             } disabled:opacity-60`}
                           >
                             <Wifi className="h-3.5 w-3.5" />

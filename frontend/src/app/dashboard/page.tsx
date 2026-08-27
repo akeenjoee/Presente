@@ -543,7 +543,7 @@ export default function Dashboard() {
           <KpiCard
             title="Online"
             value={loading ? "-" : presentOnlineCount}
-            icon={<UserCheck className="h-5 w-5 text-blue-500" />}
+            icon={<UserCheck className="h-5 w-5 text-green-500" />}
             variant="success"
           />
           <KpiCard

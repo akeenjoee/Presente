@@ -42,7 +42,7 @@ export const Navbar: React.FC<NavbarProps> = ({ className = "" }) => {
           {/* Left section: Logo */}
           <div className="flex items-center z-10 relative">
             <Link href="/" className="flex items-center gap-2 shrink-0">
-              <Calendar className="h-5 w-5 text-[#2b397c] dark:text-blue-400" />
+              <img src="/blu-verticale.svg" alt="Logo JEMORE" className="h-5 w-auto object-contain" />
               <span className="hidden sm:block text-lg font-bold tracking-tight text-[#1f295c] dark:text-white whitespace-nowrap">
                 Presente!
               </span>

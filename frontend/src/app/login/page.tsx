@@ -2,7 +2,7 @@
 
 import React, { Suspense } from "react";
 import { signIn } from "next-auth/react";
-import { QrCode, ShieldAlert } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
 function LoginContent() {
@@ -12,25 +12,23 @@ function LoginContent() {
   return (
     <div className="max-w-md w-full mx-auto my-12 p-10 bg-white rounded-xl shadow-2xl text-center">
       <div className="flex justify-center mb-5">
-         <div className="p-3 border border-[#2b397c] rounded-full">
-           <QrCode className="h-8 w-8 text-[#2b397c]" />
-         </div>
+        <img
+          src="/blu-verticale.svg"
+          alt="JEMORE Logo"
+          className="h-20 w-auto object-contain"
+        />
       </div>
-      
+
       <h2 className="text-2xl font-bold text-[#1f295c] mb-1 tracking-tight">
         Presente!
       </h2>
-      
-      <p className="text-sm text-gray-500 mb-8">
-        Accesso Piattaforma
-      </p>
 
       <div className="bg-gray-50 text-gray-700 text-[13px] font-medium py-3 px-4 rounded-lg mb-8 flex items-center justify-center gap-2 border border-gray-100 shadow-sm">
-         <ShieldAlert className="h-4 w-4 text-[#1f295c]" />
-         Utilizza il tuo account <strong>JEMORE</strong> per accedere.
+        <ShieldAlert className="h-4 w-4 text-[#1f295c]" />
+        Utilizza il tuo account <strong>JEMORE</strong> per accedere.
       </div>
 
-      <button 
+      <button
         onClick={() => signIn("azure-ad", { callbackUrl })}
         className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-full font-semibold flex items-center justify-center gap-2 transition-colors shadow-md"
       >
