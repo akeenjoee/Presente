@@ -1,17 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { LiveRosterTableProps, RosterMember } from "./LiveRosterTable.types";
 import { StatusBadge } from "../../atoms/StatusBadge/StatusBadge";
-import { Search, AlertTriangle, UserCheck, Wifi, ShieldCheck, Loader2, UserMinus } from "lucide-react";
+import { Search, AlertTriangle, UserCheck, Wifi, ShieldCheck, Loader2, UserMinus, X } from "lucide-react";
+import { Select } from "../../atoms/Select/Select";
 
 export const LiveRosterTable: React.FC<LiveRosterTableProps> = ({
   members,
   onManualCheckin,
   isLoading = false,
   isOnlineEvent = false,
+  eventType,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedArea, setSelectedArea] = useState("ALL");
   const [selectedStatus, setSelectedStatus] = useState("ALL");
+  
+  // Delega Modal State
+  const [showDelegaModal, setShowDelegaModal] = useState(false);
+  const [delegaTargetId, setDelegaTargetId] = useState<number | null>(null);
+  const [delegaA, setDelegaA] = useState<string>("");
+  const [sociOptions, setSociOptions] = useState<{value: string, label: string}[]>([]);
+
+  useEffect(() => {
+    // Fetch soci list when component mounts (or when modal is opened, but here is fine for now)
+    async function fetchSoci() {
+      try {
+        const res = await fetch((process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000") + "/api/soci");
+        if (res.ok) {
+          const data = await res.json();
+          setSociOptions(data.map((s: any) => ({
+            value: s.nome,
+            label: `${s.nome} (${s.email})`
+          })));
+        }
+      } catch (err) {
+        console.error("Failed to fetch soci for delega dropdown", err);
+      }
+    }
+    fetchSoci();
+  }, []);
 
   // Get unique areas for filter dropdown
   const areas = Array.from(new Set(members.map((m) => m.area_lavoro).filter(Boolean)));
@@ -43,10 +70,17 @@ export const LiveRosterTable: React.FC<LiveRosterTableProps> = ({
     await onManualCheckin(socioId, action, delega_a);
   };
 
-  const handleGiustifica = async (socioId: number) => {
-    const delega = prompt("Inserisci il nome o l'email del delegato (lascia vuoto se assente senza delega):");
-    if (delega !== null) {
-      await handleAction(socioId, "GIUSTIFICATO", delega || undefined);
+  const handleGiustifica = (socioId: number) => {
+    setDelegaTargetId(socioId);
+    setDelegaA("");
+    setShowDelegaModal(true);
+  };
+
+  const confirmGiustifica = async () => {
+    if (delegaTargetId !== null) {
+      await handleAction(delegaTargetId, "GIUSTIFICATO", delegaA || undefined);
+      setShowDelegaModal(false);
+      setDelegaTargetId(null);
     }
   };
 
@@ -105,13 +139,14 @@ export const LiveRosterTable: React.FC<LiveRosterTableProps> = ({
               <th className="px-6 py-3 font-semibold">Ruolo / Area</th>
               <th className="px-6 py-3 font-semibold">Stato presenze</th>
               {isOnlineEvent && <th className="px-6 py-3 font-semibold">Durata</th>}
+              {eventType === "ASSEMBLEA" && <th className="px-6 py-3 font-semibold">Iscrizione</th>}
               {onManualCheckin && <th className="px-6 py-3 font-semibold text-right">Azioni Rapide</th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-zinc-800 bg-white dark:bg-zinc-900">
             {isLoading ? (
               <tr>
-                <td colSpan={4} className="text-center py-10 text-gray-500">
+                <td colSpan={6} className="text-center py-10 text-gray-500">
                   <div className="flex items-center justify-center gap-2">
                     <Loader2 className="h-5 w-5 animate-spin" /> Caricamento in corso...
                   </div>
@@ -119,7 +154,7 @@ export const LiveRosterTable: React.FC<LiveRosterTableProps> = ({
               </tr>
             ) : filteredMembers.length === 0 ? (
               <tr>
-                <td colSpan={4} className="text-center py-10 text-gray-500">
+                <td colSpan={6} className="text-center py-10 text-gray-500">
                   Nessun socio trovato.
                 </td>
               </tr>
@@ -172,6 +207,17 @@ export const LiveRosterTable: React.FC<LiveRosterTableProps> = ({
                         {member.durata_minuti !== undefined && member.durata_minuti > 0 ? (
                           <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">
                             {member.durata_minuti} min
+                          </span>
+                        ) : (
+                          <span className="text-sm text-gray-400 dark:text-gray-500">-</span>
+                        )}
+                      </td>
+                    )}
+                    {eventType === "ASSEMBLEA" && (
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {member.registrato_il ? (
+                          <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                            {new Date(member.registrato_il).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                           </span>
                         ) : (
                           <span className="text-sm text-gray-400 dark:text-gray-500">-</span>
@@ -263,6 +309,52 @@ export const LiveRosterTable: React.FC<LiveRosterTableProps> = ({
           </span>
         </div>
       </div>
+
+      {/* Delega Modal */}
+      {showDelegaModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-zinc-800 scale-in-center">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-zinc-800 flex justify-between items-center bg-blue-50 dark:bg-blue-900/20">
+              <h3 className="text-lg font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5" />
+                Registra Giustificazione / Delega
+              </h3>
+              <button 
+                onClick={() => setShowDelegaModal(false)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="px-6 py-6 text-gray-700 dark:text-gray-300 space-y-4">
+              <p className="text-sm">
+                Seleziona il socio a cui assegnare la delega.
+              </p>
+              <Select 
+                label="Socio Delegato"
+                options={sociOptions}
+                value={delegaA}
+                onChange={(e) => setDelegaA(e.target.value)}
+              />
+            </div>
+            <div className="px-6 py-4 bg-gray-50 dark:bg-zinc-800/50 border-t border-gray-200 dark:border-zinc-800 flex justify-end gap-3">
+              <button
+                onClick={() => setShowDelegaModal(false)}
+                className="px-4 py-2 bg-gray-200 dark:bg-zinc-700 hover:bg-gray-300 dark:hover:bg-zinc-600 text-gray-800 dark:text-white rounded-full font-medium transition-colors"
+              >
+                Annulla
+              </button>
+              <button
+                onClick={confirmGiustifica}
+                disabled={!delegaA}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-full font-medium transition-colors shadow-sm"
+              >
+                Conferma
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

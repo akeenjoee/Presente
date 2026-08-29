@@ -2,7 +2,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 from models import Socio, Evento, Presenza, UnmatchedLog
 
-def checkin_member(db: Session, email: str, event_id: int, modalita: str, name_fallback: str = None, durata_minuti: int = 0, delega_a: str = None) -> dict:
+def checkin_member(db: Session, email: str, event_id: int, modalita: str, name_fallback: str = None, durata_minuti: int = 0, delega_a: str = None, intolleranze: str = None) -> dict:
     """
     Checks in a member for an event.
     If the member is found by email, a Presenza record is created/updated.
@@ -45,15 +45,24 @@ def checkin_member(db: Session, email: str, event_id: int, modalita: str, name_f
         if presence:
             presence.modalita = modalita
             presence.durata_minuti = max(presence.durata_minuti, durata_minuti)
-            if delega_a is not None:
+            if modalita != "GIUSTIFICATO":
+                presence.delega_a = None
+            elif delega_a is not None:
                 presence.delega_a = delega_a
+                
+            if intolleranze is not None:
+                presence.intolleranze = intolleranze
+            
+            import datetime
+            presence.registrato_il = datetime.datetime.utcnow()
         else:
             presence = Presenza(
                 evento_id=event_id,
                 socio_id=socio.id,
                 modalita=modalita,
                 durata_minuti=durata_minuti,
-                delega_a=delega_a
+                delega_a=delega_a if modalita == "GIUSTIFICATO" else None,
+                intolleranze=intolleranze
             )
             db.add(presence)
             
@@ -65,7 +74,8 @@ def checkin_member(db: Session, email: str, event_id: int, modalita: str, name_f
             "socio_id": socio.id,
             "nome": socio.nome,
             "email": socio.email,
-            "modalita": modalita
+            "modalita": modalita,
+            "delega_a": presence.delega_a
         }
     else:
         # Create an unmatched log
