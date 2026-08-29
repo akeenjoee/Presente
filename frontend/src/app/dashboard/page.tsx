@@ -28,13 +28,6 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Event Creation Form state
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [newType, setNewType] = useState("FORMAZIONE");
-  const [newModality, setNewModality] = useState("HYBRID");
-  const [creating, setCreating] = useState(false);
-  
   const [checkinError, setCheckinError] = useState<string | null>(null);
 
   // Fetch events only (roster is fetched per event)
@@ -102,16 +95,11 @@ export default function Dashboard() {
     const handleProiettaQr = () => {
       setIsQrOpen(true);
     };
-    const handleNuovoEvento = () => {
-      setShowCreateForm((prev) => !prev);
-    };
 
     window.addEventListener("trigger-proietta-qr", handleProiettaQr);
-    window.addEventListener("trigger-nuovo-evento", handleNuovoEvento);
 
     return () => {
       window.removeEventListener("trigger-proietta-qr", handleProiettaQr);
-      window.removeEventListener("trigger-nuovo-evento", handleNuovoEvento);
     };
   }, []);
 
@@ -121,10 +109,6 @@ export default function Dashboard() {
     let shouldCleanUrl = false;
     if (urlParams.get("project") === "true") {
       setIsQrOpen(true);
-      shouldCleanUrl = true;
-    }
-    if (urlParams.get("create") === "true") {
-      setShowCreateForm(true);
       shouldCleanUrl = true;
     }
     if (shouldCleanUrl) {
@@ -143,7 +127,7 @@ export default function Dashboard() {
         const payload = JSON.parse(event.data);
         const sseEventType = payload.event;
         const sseData = payload.data;
-        
+
         if (!sseData) return;
 
         // If the check-in matches the currently selected event, update roster inline
@@ -163,6 +147,7 @@ export default function Dashboard() {
                   attendance_modality: modalita,
                   consecutive_absences: 0,
                   is_critical_alert: false,
+                  delega_a: sseData.delega_a,
                 };
               }
               return member;
@@ -190,38 +175,6 @@ export default function Dashboard() {
     };
   }, [selectedEventId]);
 
-  // Handle Event Creation
-  const handleCreateEvent = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTitle.trim()) return;
-
-    try {
-      setCreating(true);
-      const res = await fetch("http://localhost:8000/api/events", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          titolo: newTitle,
-          tipo: newType,
-          modalita: newModality,
-          soglia_consecutiva: 3, // Legacy default, unused in UI
-        }),
-      });
-
-      if (!res.ok) throw new Error("Impossibile creare l'evento");
-      const createdEvent = await res.json();
-
-      setEvents((prev) => [createdEvent, ...prev]);
-      setSelectedEventId(createdEvent.id);
-      setNewTitle("");
-      setShowCreateForm(false);
-    } catch (err: any) {
-      alert(err.message || "Errore durante la creazione");
-    } finally {
-      setCreating(false);
-    }
-  };
-
   // Handle Manual Check-In — optimistic update so status and KPIs update instantly
   const handleManualCheckin = async (
     socioId: number,
@@ -243,8 +196,8 @@ export default function Dashboard() {
         const newStreak = isPresent
           ? 0
           : isExcused
-          ? Math.max(0, m.consecutive_absences - 1)
-          : m.consecutive_absences;
+            ? Math.max(0, m.consecutive_absences - 1)
+            : m.consecutive_absences;
         return {
           ...m,
           attendance_status: status,
@@ -273,7 +226,7 @@ export default function Dashboard() {
       if (!res.ok || data.status === "error") {
         throw new Error(data.message || data.detail || "Impossibile registrare la presenza manualmente");
       }
-      
+
       // No full refetch needed — SSE will handle any sync for other connected clients
     } catch (err: any) {
       // Rollback: re-fetch to get the real state on error
@@ -346,9 +299,9 @@ export default function Dashboard() {
 
   // Calculate KPIs dynamically
   const activeMembers = members.filter((m) => m.stato === "ATTIVO");
-  
+
   const totalPreRegisteredCount = activeMembers.filter((m) => m.is_preregistrato).length;
-  
+
   const preRegisteredCount = activeMembers.filter(
     (m) => m.attendance_status === "PRE_REGISTRATO"
   ).length;
@@ -420,16 +373,17 @@ export default function Dashboard() {
                   />
                 </label>
               ) : (
-                <label className="flex items-center gap-2 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-gray-700 dark:text-gray-300 rounded-full border border-gray-300 dark:border-zinc-700 cursor-pointer font-sans text-sm font-semibold transition-colors shadow-sm">
+                <button
+                  onClick={() => {
+                    const link = `${window.location.origin}/events/${selectedEvent.id}/partecipazione`;
+                    navigator.clipboard.writeText(link);
+                    alert("Link univoco per il modulo di partecipazione copiato negli appunti:\n" + link);
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-gray-700 dark:text-gray-300 rounded-full border border-gray-300 dark:border-zinc-700 cursor-pointer font-sans text-sm font-semibold transition-colors shadow-sm"
+                >
                   <Upload className="h-4 w-4" />
-                  Importa deleghe (CSV)
-                  <input
-                    type="file"
-                    accept=".csv"
-                    className="hidden"
-                    onChange={handleCsvUpload}
-                  />
-                </label>
+                  Crea Link (Form)
+                </button>
               )}
 
               {/* Proietta QR — visible here, relative to the selected event */}
@@ -454,76 +408,6 @@ export default function Dashboard() {
             </div>
           )}
         </div>
-
-        {/* Create Event Modal / Drawer */}
-        {showCreateForm && (
-          <form
-            onSubmit={handleCreateEvent}
-            className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 space-y-4 shadow-xl max-w-lg"
-          >
-            <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2 text-base">
-              <PlusCircle className="h-5 w-5 text-blue-500" /> Crea Nuovo Evento
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-gray-500 uppercase">Titolo</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Es. Assemblea Ordinaria"
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  className="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-950 text-sm text-gray-900 dark:text-white"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-gray-500 uppercase">Tipo</label>
-                <select
-                  value={newType}
-                  onChange={(e) => setNewType(e.target.value)}
-                  className="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-950 text-sm text-gray-900 dark:text-white"
-                >
-                  <option value="FORMAZIONE">Formazione</option>
-                  <option value="ASSEMBLEA">Assemblea</option>
-                  <option value="TEAM_BUILDING">Team Building</option>
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-gray-500 uppercase">Modalità</label>
-                <select
-                  value={newModality}
-                  onChange={(e) => setNewModality(e.target.value)}
-                  className="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-950 text-sm text-gray-900 dark:text-white"
-                >
-                  <option value="HYBRID">Ibrida</option>
-                  <option value="IN_PRESENZA">In Presenza</option>
-                  <option value="ONLINE">Online</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2.5 justify-end pt-2">
-              <Button
-                variant="secondary"
-                type="button"
-                onClick={() => setShowCreateForm(false)}
-                className="text-xs px-3 py-1.5"
-              >
-                Annulla
-              </Button>
-              <Button
-                variant="primary"
-                type="submit"
-                isLoading={creating}
-                className="text-xs px-3 py-1.5"
-              >
-                Crea Evento
-              </Button>
-            </div>
-          </form>
-        )}
 
         {/* Real-time KPIs */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -567,6 +451,7 @@ export default function Dashboard() {
             onManualCheckin={handleManualCheckin}
             isLoading={loading}
             isOnlineEvent={selectedEvent?.modalita === "ONLINE" || selectedEvent?.modalita === "ONLINE_ONLY"}
+            eventType={selectedEvent?.tipo}
           />
         </section>
       </main>
@@ -600,7 +485,7 @@ export default function Dashboard() {
                 <AlertCircle className="w-5 h-5" />
                 Errore Operazione
               </h3>
-              <button 
+              <button
                 onClick={() => setCheckinError(null)}
                 className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
               >

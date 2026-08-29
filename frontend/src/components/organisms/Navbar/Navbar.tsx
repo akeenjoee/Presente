@@ -12,7 +12,7 @@ export const Navbar: React.FC<NavbarProps> = ({ className = "" }) => {
   const router = useRouter();
   const { data: session, status } = useSession();
 
-  if (pathname.startsWith("/checkin")) {
+  if (pathname.startsWith("/checkin") || pathname.includes("/partecipazione")) {
     return null;
   }
 

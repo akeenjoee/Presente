@@ -3,7 +3,7 @@ import json
 import io
 from datetime import datetime
 from typing import Optional
-from fastapi import FastAPI, Depends, HTTPException, Query, Security, UploadFile, File
+from fastapi import FastAPI, Depends, HTTPException, Query, Security, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
@@ -142,6 +142,17 @@ async def create_event(event_in: EventCreate, db: Session = Depends(get_db)):
     # Broadcast event creation
     await broadcast_to_sse("EVENT_CREATED", {"id": new_event.id, "titolo": new_event.titolo})
     
+    # If ASSEMBLEA, generate the folder and Excel tracking file on OneDrive
+    if new_event.tipo == "ASSEMBLEA":
+        try:
+            from ms_graph import create_and_upload_empty_excel
+            cartella = f"Deleghe_{new_event.titolo.replace(' ', '_')}"
+            # This task can happen in the background or awaited directly.
+            # Awaiting to ensure it's created before any fast submissions.
+            await create_and_upload_empty_excel(cartella)
+        except Exception as e:
+            print(f"Failed to create Excel for Assemblea: {e}")
+    
     return new_event
 
 @app.get("/api/events", response_model=list[EventResponse])
@@ -264,6 +275,99 @@ async def manual_checkin(payload: ManualCheckinRequest, db: Session = Depends(ge
     result["event_id"] = payload.event_id
     result["modalita"] = payload.modalita
     
+    # Broadcast to SSE listeners
+    await broadcast_to_sse("CHECKIN_UPDATED", result)
+    return result
+
+@app.post("/api/events/{event_id}/delega")
+async def register_delega(
+    event_id: int,
+    email: str = Form(...),
+    modalita: str = Form(...),
+    delega_a: Optional[str] = Form(None),
+    intolleranze: Optional[str] = Form(None),
+    file: Optional[UploadFile] = File(None),
+    db: Session = Depends(get_db)
+):
+    """
+    Registers an absence with a delegation (delega), optionally uploading a PDF to Microsoft Drive.
+    """
+    event = db.query(models.Evento).filter(models.Evento.id == event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+        
+    socio = db.query(models.Socio).filter(models.Socio.email.ilike(email)).first()
+    if not socio:
+        raise HTTPException(status_code=404, detail="Socio non trovato")
+
+    # 1. Se c'è un file di delega, lo carichiamo su OneDrive
+    pdf_url = None
+    if file and delega_a:
+        try:
+            from ms_graph import upload_file_to_drive
+            content = await file.read()
+            # Cartella con il nome dell'evento
+            cartella = f"Deleghe_{event.titolo.replace(' ', '_')}"
+            nome_file = f"Delega_{socio.nome.replace(' ', '_')}_A_{delega_a.replace(' ', '_')}.pdf"
+            pdf_url = await upload_file_to_drive(content, nome_file, cartella)
+        except Exception as e:
+            # Se l'upload fallisce, segnaliamo un errore grave
+            print(f"Failed to upload to drive: {e}")
+            raise HTTPException(status_code=500, detail=f"Errore durante l'upload su Microsoft Drive: {str(e)}")
+
+    # 2. Map form selections to the proper Pre-Registration or Giustificato state
+    db_modalita = modalita
+    is_prereg = False
+    
+    if modalita in ["IN_PRESENZA", "ONLINE"]:
+        db_modalita = "PRE_REGISTRATO"
+        is_prereg = True
+    elif modalita == "ASSENTE":
+        db_modalita = "GIUSTIFICATO"
+
+    # 3. Registra nel database, `checkin_member` controllerà il limite delle 3 deleghe
+    result = services.checkin_member(
+        db=db,
+        email=socio.email,
+        event_id=event_id,
+        modalita=db_modalita,
+        name_fallback=socio.nome,
+        delega_a=delega_a,
+        intolleranze=intolleranze
+    )
+    
+    # If the user was pre-registered, set the flag explicitly
+    if is_prereg and result.get("status") == "success" and result.get("type") == "matched":
+        presence = db.query(models.Presenza).filter(
+            models.Presenza.evento_id == event_id,
+            models.Presenza.socio_id == result["socio_id"]
+        ).first()
+        if presence:
+            presence.is_preregistrato = True
+            db.commit()
+    
+    result["event_id"] = event_id
+    result["modalita"] = db_modalita
+    if pdf_url:
+        result["pdf_url"] = pdf_url
+
+    # Appends to Excel file on OneDrive if ASSEMBLEA
+    if event.tipo == "ASSEMBLEA":
+        try:
+            from ms_graph import append_to_excel_on_drive
+            cartella = f"Deleghe_{event.titolo.replace(' ', '_')}"
+            row_data = {
+                "nome": socio.nome,
+                "email": socio.email,
+                "modalita": db_modalita,
+                "delega_a": delega_a if db_modalita == "GIUSTIFICATO" else "",
+                "intolleranze": intolleranze or ""
+            }
+            # Execute without blocking the return heavily (in a real prod app, use BackgroundTasks)
+            await append_to_excel_on_drive(cartella, "Raccolta_Dati.xlsx", row_data)
+        except Exception as e:
+            print(f"Error appending to Excel on Drive: {e}")
+
     # Broadcast to SSE listeners
     await broadcast_to_sse("CHECKIN_UPDATED", result)
     return result
@@ -488,3 +592,11 @@ def get_socio_by_email(email: str, db: Session = Depends(get_db)):
         "area_lavoro": socio.area_lavoro,
         "stato": socio.stato
     }
+
+@app.get("/api/soci")
+def list_soci(db: Session = Depends(get_db)):
+    """
+    Returns all active members for dropdowns.
+    """
+    soci = db.query(models.Socio).filter(models.Socio.stato == "ATTIVO").order_by(models.Socio.nome.asc()).all()
+    return [{"id": s.id, "nome": s.nome, "email": s.email} for s in soci]

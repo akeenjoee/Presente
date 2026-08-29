@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, Filter, Calendar, FileText, ChevronDown, ChevronUp, Loader2, Users, LayoutDashboard, PlusCircle } from "lucide-react";
+import { Search, Filter, Calendar, FileText, ChevronDown, ChevronUp, Loader2, Users, LayoutDashboard, PlusCircle, X } from "lucide-react";
 import { Button } from "@/components/atoms/Button/Button";
 import { StatusBadge } from "@/components/atoms/StatusBadge/StatusBadge";
 import { MinutesExportModal } from "@/components/organisms/MinutesExportModal/MinutesExportModal";
@@ -57,6 +57,13 @@ export default function EventArchive() {
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [exportEventId, setExportEventId] = useState<number | null>(null);
   const [exportEventTitle, setExportEventTitle] = useState("");
+  
+  // Event Creation Modal state
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newType, setNewType] = useState("FORMAZIONE");
+  const [newModality, setNewModality] = useState("HYBRID");
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     fetchEvents();
@@ -114,6 +121,39 @@ export default function EventArchive() {
     return matchesSearch && matchesType;
   });
 
+  // Handle Event Creation
+  const handleCreateEvent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTitle.trim()) return;
+
+    try {
+      setCreating(true);
+      const res = await fetch("http://localhost:8000/api/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          titolo: newTitle,
+          tipo: newType,
+          modalita: newModality,
+          soglia_consecutiva: 3, 
+        }),
+      });
+
+      if (!res.ok) throw new Error("Impossibile creare l'evento");
+      const createdEvent = await res.json();
+
+      setNewTitle("");
+      setShowCreateForm(false);
+      
+      // Redirect to the dashboard for the new event
+      window.location.href = `/dashboard?event_id=${createdEvent.id}`;
+    } catch (err: any) {
+      alert(err.message || "Errore durante la creazione");
+    } finally {
+      setCreating(false);
+    }
+  };
+
   const formatDate = (dateStr: string) => {
     try {
       const d = new Date(dateStr);
@@ -154,7 +194,7 @@ export default function EventArchive() {
           </div>
           
           <button
-            onClick={() => window.location.href = "/dashboard?create=true"}
+            onClick={() => setShowCreateForm(true)}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-sm font-semibold transition-colors shadow-md shrink-0"
           >
             <PlusCircle className="h-5 w-5" /> Nuovo Evento
@@ -453,6 +493,86 @@ export default function EventArchive() {
           eventId={exportEventId}
           eventTitle={exportEventTitle}
         />
+      )}
+
+      {/* Create Event Modal / Drawer */}
+      {showCreateForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden border border-gray-200 dark:border-zinc-800">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-zinc-800 flex justify-between items-center bg-blue-50 dark:bg-blue-900/20">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <PlusCircle className="h-5 w-5 text-blue-500" /> Crea Nuovo Evento
+              </h3>
+              <button
+                onClick={() => setShowCreateForm(false)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleCreateEvent} className="p-6 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-gray-500 uppercase">Titolo</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Es. Assemblea Ordinaria"
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    className="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-950 text-sm text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-gray-500 uppercase">Tipo</label>
+                  <select
+                    value={newType}
+                    onChange={(e) => setNewType(e.target.value)}
+                    className="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-950 text-sm text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="FORMAZIONE">Formazione</option>
+                    <option value="ASSEMBLEA">Assemblea</option>
+                    <option value="TEAM_BUILDING">Team Building</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1 md:col-span-2">
+                  <label className="text-xs font-bold text-gray-500 uppercase">Modalità</label>
+                  <select
+                    value={newModality}
+                    onChange={(e) => setNewModality(e.target.value)}
+                    className="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-950 text-sm text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="HYBRID">Ibrida</option>
+                    <option value="IN_PRESENZA">In Presenza</option>
+                    <option value="ONLINE">Online</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2.5 justify-end pt-4 border-t border-gray-100 dark:border-zinc-800 mt-4">
+                <Button
+                  variant="secondary"
+                  type="button"
+                  onClick={() => setShowCreateForm(false)}
+                  className="text-xs px-4 py-2"
+                >
+                  Annulla
+                </Button>
+                <Button
+                  variant="primary"
+                  type="submit"
+                  isLoading={creating}
+                  className="text-xs px-4 py-2"
+                >
+                  Crea Evento
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -47,7 +47,8 @@ class Presenza(Base):
     socio_id = Column(Integer, ForeignKey("soci.id", ondelete="CASCADE"), nullable=False)
     modalita = Column(String, nullable=False)  # "IN_PRESENZA", "ONLINE", "GIUSTIFICATO", "PRE_REGISTRATO", "ASSENTE"
     delega_a = Column(String, nullable=True)  # Name or email of proxy delegate
-    
+    intolleranze = Column(String, nullable=True)  # Food intolerances
+
     # Proxy tracking
     delegante_id = Column(Integer, ForeignKey("soci.id", ondelete="CASCADE"), nullable=True)
     delegato_id = Column(Integer, ForeignKey("soci.id", ondelete="SET NULL"), nullable=True)
