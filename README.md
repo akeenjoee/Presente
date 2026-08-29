@@ -44,15 +44,17 @@ Presente!/
 │   ├── models.py             # Definizione dei modelli SQLAlchemy (Schema Database).
 │   ├── database.py           # Connessione e configurazione del database SQLite.
 │   ├── auth.py               # Logica di decodifica token JWKS (Azure) e generazione HMAC per QR Code.
-│   ├── services.py           # Logica di business (Analytics, Import CSV, Streak Engine).
+│   ├── ms_graph.py           # Integrazione Microsoft Graph API per esportazione e gestione file su OneDrive/SharePoint.
+│   ├── services.py           # Logica di business (Analytics, Import CSV, Streak Engine, Workflow Assemblee).
 │   └── teams_parser.py       # Algoritmi per il parsing e calcolo dei log di Microsoft Teams.
 │
 └── frontend/                 # Next.js Frontend (App Router)
     ├── src/
-    │   ├── app/              # Rotte e Pagine (es. /dashboard, /analytics, /checkin, /report).
-    │   ├── components/       # Componenti UI riutilizzabili e layout (es. QrProjector, Navbar).
+    │   ├── app/              # Rotte e Pagine (es. /dashboard, /analytics, /checkin).
+    │   │   └── events/       # Rotte dinamiche per la gestione degli eventi e dei moduli di delega ([eventId]/partecipazione).
+    │   ├── components/       # Componenti UI riutilizzabili (es. LiveRosterTable, Atoms, QrProjector, Navbar).
     │   ├── middleware.ts     # Protezione delle rotte (NextAuth) basata su RBAC per Board/Responsabili.
-    │   └── lib/              # Utility frontend (configurazione tailwind, fetchers).
+    │   └── lib/              # Utility frontend (configurazione tailwind, API fetchers).
     ├── public/               # Asset statici (immagini, logo, file CSV di test).
     └── tailwind.config.ts    # Configurazione del design system (Colori, Dark Mode).
 ```
@@ -127,6 +129,12 @@ DATABASE_URL=postgresql://user:password@host:port/dbname
 
 # Sicurezza (Generazione HMAC QR Code)
 QR_SECRET_KEY=la-tua-chiave-segreta-molto-complessa-321
+
+# Integrazione Microsoft Graph API (OneDrive/SharePoint)
+MS_CLIENT_ID=il-tuo-client-id-microsoft
+MS_CLIENT_SECRET=il-tuo-client-secret-microsoft
+MS_TENANT_ID=il-tuo-tenant-id-microsoft
+MS_DRIVE_ID=il-tuo-drive-id-sharepoint-o-onedrive
 ```
 
 ### `.env.local` (Frontend)
@@ -173,3 +181,49 @@ Prima di utilizzare la dashboard, devi popolare il database con l'organigramma a
 
 Il frontend sarà accessibile all'indirizzo `http://localhost:3000`. 
 Effettua l'accesso con un account autorizzato (`@jemore.it` avente ruolo/area compatibile col Board o Responsabili) per visualizzare l'interfaccia di amministrazione.
+
+---
+
+## 7. Guida all'Uso (Step-by-Step Workflow)
+
+Questa guida illustra il flusso di lavoro tipico per un amministratore (Board / Responsabili) che deve utilizzare la piattaforma per gestire un nuovo evento.
+
+### Step 1: Accesso alla Piattaforma
+1. Apri la pagina principale dell'applicazione.
+2. Clicca su **"Accedi con Microsoft"**. Verrà richiesto il login tramite l'account aziendale `@jemore.it`.
+3. Il sistema riconoscerà automaticamente il tuo ruolo in base all'email. Se hai i permessi di amministrazione, verrai reindirizzato all'**Archivio Eventi** (la dashboard principale).
+
+### Step 2: Creazione di un Nuovo Evento
+1. Dalla schermata Home, clicca sul pulsante blu **"Nuovo Evento"**.
+2. Compila il modulo a comparsa:
+   - **Titolo Evento**: es. "Assemblea Ordinaria Marzo".
+   - **Tipologia**: Scegli tra "ASSEMBLEA", "FORMAZIONE" o "TEAM_BUILDING". Le assemblee godono di funzionalità aggiuntive (come le deleghe).
+   - **Modalità**: "Ibrida", "In Presenza" o "Online".
+3. Clicca "Crea Evento". Verrai trasportato automaticamente nella pagina di gestione (Dashboard) di quel singolo evento.
+   
+
+### Step 3: Gestione Pre-Assemblea (Raccolta Deleghe)
+Questa fase riguarda la preparazione prima dell'evento, utile soprattutto per le Assemblee.
+1. Dalla schermata del tuo evento, cliccando sul bottone **Crea Link(Form)**, i soci possono accedere al link per la **Partecipazione / Delega**.
+2. Il socio compila il modulo (indicando se partecipa o se intende delegare un collega). In caso di delega, il socio caricherà il PDF firmato.
+3. I dati inseriti si aggiorneranno in tempo reale sulla **Live Roster Table** del tuo evento e verranno scritti automaticamente anche nell'**Excel condiviso su OneDrive**. 
+4. Nella tabella admin vedrai una colonna **"Iscrizione"** (es. `29/08, 14:30`) che certifica il momento esatto dell'ultima interazione del socio con il form.
+
+### Step 4: Il Giorno dell'Evento (Fase di Check-In)
+1. **Per prendere le presenze in presenza o evento ibrido**:
+   - Dalla dashboard dell'evento, clicca su **"Proietta QR Code"**.
+   - Mostra il QR Code sullo schermo della sala o manda il link in chat. I soci scannerizzeranno il QR o cliccheranno sul link per segnare la loro presenza. 
+2. **Per eventi solamente online (Microsoft Teams)**:
+   - A fine evento, scarica il CSV standard dei log di Microsoft Teams.
+   - Nella dashboard dell'evento su Presente!, clicca su **"Importa Presenze (Teams)"** e carica il file. Il sistema capirà automaticamente chi c'era e calcolerà il tempo di permanenza netto.
+3. **Check-in Manuale / Correzioni**:
+   - Qualcuno si è dimenticato di scannerizzare il QR Code? Utilizza la colonna **Azioni Rapide** nella tabella per segnare manualmente lo stato (`In Presenza` o `Online`) con un clic.
+
+### Step 5: Esportazione Verbali e Monitoraggio Analytics
+1. **Esportazione del Registro**:
+   - A fine evento, sempre dalla dashboard, clicca su **"Esporta Verbale"**.
+   - Scegli tra **CSV** o **PDF**. Il sistema genererà un documento con la lista di tutti i presenti, divisi per categoria e ruolo, perfetto da allegare ai verbali ufficiali.
+2. **Controllo del Rischio Decadimento (Streaks)**:
+   - Vai alla pagina globale **"Analisi Membri"** (raggiungibile dal menu di navigazione in alto).
+   - In questa pagina, il Motore Analitico globale calcola gli "strike" storici dei membri per identificare chi rischia il decadimento ai sensi dello Statuto.
+   - Vedrai delle KPI Card rosse/gialle e la tabella mostrerà i flag **"Alert"** (un'assenza ingiustificata) o **"Critica"** (due assenze consecutive in assemblea).
