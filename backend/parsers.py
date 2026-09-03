@@ -157,8 +157,17 @@ def parse_pre_assembly_csv(db: Session, event_id: int, csv_content: str) -> dict
         
     email_header = find_header(["email", "indirizzo", "mail"])
     nome_header = find_header(["nome", "cognome", "socio", "nominativo", "name"])
-    attendance_header = find_header(["partecip", "presen", "attend", "ci sarai"])
-    delega_header = find_header(["delega", "proxy", "delegat"])
+    attendance_header = find_header(["partecip", "presen", "attend", "ci sarai", "modalità di presenza"])
+    
+    # Priority to actual name fields, avoid the file upload field
+    delega_header = find_header(["nome del delegato", "a chi deleghi", "delegat"])
+    if not delega_header:
+        # Fallback if they just called it "delega" but ensure it's not the document upload
+        for h in headers:
+            h_low = h.lower()
+            if "delega" in h_low and "documento" not in h_low and "file" not in h_low:
+                delega_header = h
+                break
     
     print(f"Mapped headers: email={email_header}, nome={nome_header}, attendance={attendance_header}, delega={delega_header}")
     
@@ -202,10 +211,16 @@ def parse_pre_assembly_csv(db: Session, event_id: int, csv_content: str) -> dict
                 
             # Determine presence modality:
             is_absent = "no" in attendance_val or "non" in attendance_val or "assente" in attendance_val
+            is_online = "online" in attendance_val
+            is_in_person = "presenza" in attendance_val
             has_proxy = bool(delega_val)
             
             if is_absent or has_proxy:
                 modalita = "GIUSTIFICATO"
+            elif is_online:
+                modalita = "ONLINE"
+            elif is_in_person:
+                modalita = "IN_PRESENZA"
             else:
                 modalita = "PRE_REGISTRATO"
                 

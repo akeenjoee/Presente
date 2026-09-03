@@ -198,6 +198,23 @@ def get_event(event_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Event not found")
     return event
 
+@app.delete("/api/events/{event_id}")
+def delete_event(event_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    """
+    Deletes an event by its ID. Restricted to specific user based on JWT claims.
+    """
+    user_name = current_user.get("name")
+    if user_name not in ["Joachim Chiebuka Ihedioha", "Ihedioha Joachim Chiebuka"]:
+        raise HTTPException(status_code=403, detail="Forbidden")
+        
+    event = db.query(models.Evento).filter(models.Evento.id == event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+        
+    db.delete(event)
+    db.commit()
+    return {"status": "success", "message": "Evento eliminato con successo"}
+
 # --- Check-in Endpoint ---
 
 @app.post("/api/checkin")

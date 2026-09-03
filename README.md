@@ -212,7 +212,7 @@ Questa fase riguarda la preparazione prima dell'evento, utile soprattutto per le
 ### Step 4: Il Giorno dell'Evento (Fase di Check-In)
 1. **Per prendere le presenze in presenza o evento ibrido**:
    - Dalla dashboard dell'evento, clicca su **"Proietta QR Code"**.
-   - Mostra il QR Code sullo schermo della sala o manda il link in chat. I soci scannerizzeranno il QR o cliccheranno sul link per segnare la loro presenza. 
+   - Mostra il QR Code sullo schermo della sala o manda il link in chat. I soci scannerizzeranno il QR o copieranno il link ed incollarlo nel browser per segnare la loro presenza. 
 2. **Per eventi solamente online (Microsoft Teams)**:
    - A fine evento, scarica il CSV standard dei log di Microsoft Teams.
    - Nella dashboard dell'evento su Presente!, clicca su **"Importa Presenze (Teams)"** e carica il file. Il sistema capirà automaticamente chi c'era e calcolerà il tempo di permanenza netto.

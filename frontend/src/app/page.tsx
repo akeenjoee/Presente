@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, Filter, Calendar, FileText, ChevronDown, ChevronUp, Loader2, Users, LayoutDashboard, PlusCircle, X } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { Search, Filter, Calendar, FileText, ChevronDown, ChevronUp, Loader2, Users, LayoutDashboard, PlusCircle, X, Trash2 } from "lucide-react";
 import { Button } from "@/components/atoms/Button/Button";
 import { StatusBadge } from "@/components/atoms/StatusBadge/StatusBadge";
 import { MinutesExportModal } from "@/components/organisms/MinutesExportModal/MinutesExportModal";
@@ -40,6 +41,9 @@ interface EventRosterResponse {
 }
 
 export default function EventArchive() {
+  const { data: session } = useSession();
+  const isAuthorized = session?.user?.name === "Joachim Chiebuka Ihedioha" || session?.user?.name === "Ihedioha Joachim Chiebuka";
+
   const [events, setEvents] = useState<Evento[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -68,6 +72,34 @@ export default function EventArchive() {
   useEffect(() => {
     fetchEvents();
   }, []);
+
+  const handleDeleteEvent = async (eventId: number, eventTitle: string) => {
+    if (!isAuthorized) return;
+    if (!confirm(`Sei sicuro di voler eliminare l'evento "${eventTitle}"?\nQuesta operazione eliminerà anche tutte le presenze associate ed è IRREVERSIBILE.`)) {
+      return;
+    }
+    
+    try {
+      const res = await fetch(`http://localhost:8000/api/events/${eventId}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${(session as any)?.idToken || ""}`
+        }
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || "Errore durante l'eliminazione dell'evento");
+      }
+      setEvents(events.filter(e => e.id !== eventId));
+      if (expandedEventId === eventId) {
+        setExpandedEventId(null);
+        setRosterData(null);
+      }
+      alert("Evento eliminato con successo.");
+    } catch (err: any) {
+      alert(err.message || "Errore durante l'eliminazione");
+    }
+  };
 
   const fetchEvents = async () => {
     try {
@@ -355,6 +387,15 @@ export default function EventArchive() {
                                         className="gap-2 text-xs py-1.5 px-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-full"
                                       >
                                         <FileText className="h-4 w-4" /> Esporta Verbale
+                                      </Button>
+                                    )}
+                                    {isAuthorized && (
+                                      <Button
+                                        variant="danger"
+                                        onClick={() => handleDeleteEvent(evt.id, evt.titolo)}
+                                        className="gap-2 text-xs py-1.5 px-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-full ml-2"
+                                      >
+                                        <Trash2 className="h-4 w-4" /> Elimina Evento
                                       </Button>
                                     )}
                                   </div>

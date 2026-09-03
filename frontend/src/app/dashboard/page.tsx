@@ -29,6 +29,7 @@ export default function Dashboard() {
   const [error, setError] = useState("");
 
   const [checkinError, setCheckinError] = useState<string | null>(null);
+  const [isImportDropdownOpen, setIsImportDropdownOpen] = useState(false);
 
   // Fetch events only (roster is fetched per event)
   const fetchData = async () => {
@@ -361,7 +362,47 @@ export default function Dashboard() {
           {selectedEvent && (
             <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-gray-500 dark:text-gray-400">
 
-              {selectedEvent.modalita === "ONLINE" || selectedEvent.modalita === "ONLINE_ONLY" ? (
+              {selectedEvent.tipo === "ASSEMBLEA" ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setIsImportDropdownOpen(!isImportDropdownOpen)}
+                    className="flex items-center gap-2 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-gray-700 dark:text-gray-300 rounded-full border border-gray-300 dark:border-zinc-700 cursor-pointer font-sans text-sm font-semibold transition-colors shadow-sm"
+                  >
+                    <Upload className="h-4 w-4" />
+                    Raccolta Dati
+                  </button>
+                  
+                  {isImportDropdownOpen && (
+                    <div className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-xl shadow-lg z-50 overflow-hidden">
+                      <label className="flex items-center gap-3 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors border-b border-gray-100 dark:border-zinc-800">
+                        <Upload className="h-4 w-4 text-blue-500" />
+                        Importa Forms (CSV)
+                        <input
+                          type="file"
+                          accept=".csv"
+                          className="hidden"
+                          onChange={(e) => {
+                             setIsImportDropdownOpen(false);
+                             handleCsvUpload(e);
+                          }}
+                        />
+                      </label>
+                      <button
+                        onClick={() => {
+                          setIsImportDropdownOpen(false);
+                          const link = `${window.location.origin}/events/${selectedEvent.id}/partecipazione`;
+                          navigator.clipboard.writeText(link);
+                          alert("Link univoco per il modulo di partecipazione copiato negli appunti:\n" + link);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors text-left"
+                      >
+                        <FileText className="h-4 w-4 text-green-500" />
+                        Copia Link (Form Interno)
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : selectedEvent.modalita === "ONLINE" || selectedEvent.modalita === "ONLINE_ONLY" ? (
                 <label className="flex items-center gap-2 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-gray-700 dark:text-gray-300 rounded-full border border-gray-300 dark:border-zinc-700 cursor-pointer font-sans text-sm font-semibold transition-colors shadow-sm">
                   <Upload className="h-4 w-4" />
                   Importa Teams (CSV)
